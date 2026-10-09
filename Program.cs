@@ -1,3 +1,5 @@
+using BookLibrary.Data;
+
 namespace BookLibrary
 {
     public class Program
@@ -5,6 +7,8 @@ namespace BookLibrary
         public static void Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
+
+            builder.Services.AddSingleton<IDatabase, Database>();
 
             // Add services to the container.
             builder.Services.AddControllersWithViews();
@@ -28,7 +32,7 @@ namespace BookLibrary
 
             app.MapControllerRoute(
                 name: "default",
-                pattern: "{controller=Home}/{action=Index}/{id?}");
+                pattern: "{controller=Books}/{action=Index}/{id?}");
 
             app.Run();
         }
