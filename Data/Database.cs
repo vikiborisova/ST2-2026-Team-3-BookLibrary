@@ -30,7 +30,7 @@ namespace BookLibrary.Data
 
             if (!string.IsNullOrWhiteSpace(genre))
             {
-                query = query.Where(b => b.Genre.Equals(genre, StringComparison.OrdinalIgnoreCase));
+                query = query.Where(b => b.Genre.Contains(genre, StringComparison.OrdinalIgnoreCase));
             }
 
             return query.ToList();

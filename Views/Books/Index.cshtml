@@ -1,0 +1,49 @@
+﻿@model IEnumerable<BookLibrary.Models.Book>
+
+@{
+    ViewData["Title"] = "Книги";
+}
+
+<h2>Библиотека с книги</h2>
+
+<p>
+    <a asp-action="Create" class="btn btn-primary">Добави нова книга</a>
+</p>
+
+<!-- Select with Filter) -->
+<form method="get" asp-action="Index" class="row g-3 mb-4">
+    <div class="col-md-5">
+        <input type="text" name="search" value="@ViewData["CurrentSearch"]" class="form-control" placeholder="Търси по заглавие или автор..." />
+    </div>
+    <div class="col-md-4">
+        <input type="text" name="genre" value="@ViewData["CurrentGenre"]" class="form-control" placeholder="Жанр (напр. Роман)..." />
+    </div>
+    <div class="col-md-3">
+        <button type="submit" class="btn btn-secondary">Филтрирай</button>
+        <a asp-action="Index" class="btn btn-outline-secondary">Изчисти</a>
+    </div>
+</form>
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Заглавие</th>
+            <th>Автор</th>
+            <th>Жанр</th>
+            <th>Година</th>
+            <th>Описание</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>@item.Title</td>
+                <td>@item.Author</td>
+                <td>@item.Genre</td>
+                <td>@item.Year</td>
+                <td>@item.Description</td>
+            </tr>
+        }
+    </tbody>
+</table>
