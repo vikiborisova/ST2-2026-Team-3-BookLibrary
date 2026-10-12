@@ -13,10 +13,11 @@ namespace BookLibrary.Controllers
         }
 
         // SELECT WITH FILTER
-        public IActionResult Index(string? search)
+        public IActionResult Index(string? search, string? genre)
         {
-            var books = db.GetAllBooks(search);
+            var books = db.GetAllBooks(search, genre);
             ViewData["CurrentSearch"] = search;
+            ViewData["CurrentGenre"] = genre;
             return View(books);
         }
 

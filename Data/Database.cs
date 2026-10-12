@@ -16,7 +16,7 @@ namespace BookLibrary.Data
         }
 
         // Select with Filter
-        public List<Book> GetAllBooks(string? search = null)
+        public List<Book> GetAllBooks(string? search = null, string? genre = null)
         {
             var query = books.AsQueryable();
 
@@ -25,11 +25,13 @@ namespace BookLibrary.Data
                 query = query.Where(b => b.Title.Contains(search, StringComparison.OrdinalIgnoreCase) ||
                                          b.Author.Contains(search, StringComparison.OrdinalIgnoreCase) ||
                                          b.Year.ToString().Equals(search) ||
-                                         b.Description.Contains(search, StringComparison.OrdinalIgnoreCase) ||
-                                         b.Genre.Contains(search, StringComparison.OrdinalIgnoreCase));
+                                         b.Description.Contains(search, StringComparison.OrdinalIgnoreCase));
             }
 
-          
+            if (!string.IsNullOrWhiteSpace(genre))
+            {
+                query = query.Where(b => b.Genre.Contains(genre, StringComparison.OrdinalIgnoreCase));
+            }
 
             return query.ToList();
         }
