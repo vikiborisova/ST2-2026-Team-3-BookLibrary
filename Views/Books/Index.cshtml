@@ -13,10 +13,7 @@
 <!-- Select with Filter) -->
 <form method="get" asp-action="Index" class="row g-3 mb-4">
     <div class="col-md-5">
-        <input type="text" name="search" value="@ViewData["CurrentSearch"]" class="form-control" placeholder="Търси по заглавие или автор..." />
-    </div>
-    <div class="col-md-4">
-        <input type="text" name="genre" value="@ViewData["CurrentGenre"]" class="form-control" placeholder="Жанр (напр. Роман)..." />
+        <input type="text" name="search" value="@ViewData["CurrentSearch"]" class="form-control" placeholder="Търси по заглавие,  или автор..." />
     </div>
     <div class="col-md-3">
         <button type="submit" class="btn btn-secondary">Филтрирай</button>
