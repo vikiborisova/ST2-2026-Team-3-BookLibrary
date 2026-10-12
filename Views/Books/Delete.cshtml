@@ -1,0 +1,30 @@
+﻿@model BookLibrary.Models.Book
+
+@{
+    ViewData["Title"] = "Изтриване на книга";
+}
+
+<h2 class="text-danger">Изтриване на книга</h2>
+<h3>Сигурни ли сте, че искате да изтриете това заглавие от вашия рафт?</h3>
+
+<div class="card p-4 mt-3 mb-3">
+    <dl class="row">
+        <dt class="col-sm-3">Заглавие:</dt>
+        <dd class="col-sm-9"><strong>@Model.Title</strong></dd>
+
+        <dt class="col-sm-3">Автор:</dt>
+        <dd class="col-sm-9">@Model.Author</dd>
+
+        <dt class="col-sm-3">Жанр:</dt>
+        <dd class="col-sm-9">@Model.Genre</dd>
+
+        <dt class="col-sm-3">Година:</dt>
+        <dd class="col-sm-9">@Model.Year</dd>
+    </dl>
+</div>
+
+<form asp-action="Delete" method="post">
+    <input type="hidden" asp-for="Id" />
+    <button type="submit" class="btn btn-danger">Да, изтрий</button>
+    <a asp-action="Index" class="btn btn-secondary">Отказ</a>
+</form>

@@ -46,5 +46,50 @@ namespace BookLibrary.Controllers
             ViewData["Genres"] = GenreHelper.GetGenreSelectList(book.Genre);
             return View(book);
         }
+
+        // EDIT - GET
+        public IActionResult Edit(int id)
+        {
+            var book = db.GetBookById(id);
+            if (book == null) return NotFound();
+
+            ViewData["Genres"] = GenreHelper.GetGenreSelectList(book.Genre);
+            return View(book);
+        }
+        // EDIT - POST
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Edit(int id, Book book, IFormFile? pdfFile)
+        {
+            if (id != book.Id) return NotFound();
+
+            if (ModelState.IsValid)
+            {
+
+                db.UpdateBook(book);
+                return RedirectToAction(nameof(Index));
+            }
+
+            ViewData["Genres"] = GenreHelper.GetGenreSelectList(book.Genre);
+            return View(book);
+
+        }
+
+        // DELETE - GET
+        public IActionResult Delete(int id)
+        {
+            var book = db.GetBookById(id);
+            if (book == null) return NotFound();
+            return View(book);
+        }
+
+        // DELETE - POST
+        [HttpPost, ActionName("Delete")]
+        [ValidateAntiForgeryToken]
+        public IActionResult DeleteConfirmed(int id)
+        {
+            db.DeleteBook(id);
+            return RedirectToAction(nameof(Index));
+        }
     }
 }
