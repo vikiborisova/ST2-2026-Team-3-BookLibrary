@@ -10,7 +10,7 @@
     <a asp-action="Create" class="btn btn-primary">Добави нова книга</a>
 </p>
 
-<!-- Select with Filter) -->
+<!-- Форма за търсене и филтриране по жанр -->
 <form method="get" asp-action="Index" class="row g-3 mb-4">
     <div class="col-md-5">
         <input type="text" name="search" value="@ViewData["CurrentSearch"]" class="form-control" placeholder="Търси по заглавие или автор..." />
@@ -33,6 +33,7 @@
             <th>Жанр</th>
             <th>Година</th>
             <th>Описание</th>
+            <th>Действия</th>
         </tr>
     </thead>
     <tbody>
@@ -44,6 +45,10 @@
                 <td>@item.Genre</td>
                 <td>@item.Year</td>
                 <td>@item.Description</td>
+                <td>
+                    <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-sm btn-warning">Редактирай</a>
+                    <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-sm btn-danger">Изтрий</a>
+                </td>
             </tr>
         }
     </tbody>

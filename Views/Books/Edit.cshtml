@@ -1,0 +1,43 @@
+﻿@model BookLibrary.Models.Book
+
+@{
+    ViewData["Title"] = "Редактиране на книга";
+}
+
+<h2>Редактиране на книга</h2>
+
+<form asp-action="Edit" method="post" enctype="multipart/form-data">
+    <!-- Скрито поле за ID, за да не се губи при POST заявката -->
+    <input type="hidden" asp-for="Id" />
+
+
+    <div class="mb-3">
+        <label asp-for="Title" class="form-label">Заглавие</label>
+        <input asp-for="Title" class="form-control" required />
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="Author" class="form-label">Автор</label>
+        <input asp-for="Author" class="form-control" required />
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="Genre" class="form-label">Жанр</label>
+        <select asp-for="Genre" class="form-select" asp-items="ViewBag.Genres" required>
+            <option value="">-- Изберете жанр --</option>
+        </select>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="Year" class="form-label">Година</label>
+        <input asp-for="Year" type="number" class="form-control" />
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="Description" class="form-label">Бележки / Описание</label>
+        <textarea asp-for="Description" class="form-control" rows="3"></textarea>
+    </div>
+
+    <button type="submit" class="btn btn-success">Запази промените</button>
+    <a asp-action="Index" class="btn btn-secondary">Отказ</a>
+</form>
