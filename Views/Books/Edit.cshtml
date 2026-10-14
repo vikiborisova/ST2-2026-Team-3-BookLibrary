@@ -39,6 +39,15 @@
     </div>
 
     <div class="mb-3">
+        <label asp-for="Status" class="form-label">Статус на четене</label>
+        <select asp-for="Status" class="form-select">
+            <option value="Ще чета">Ще чета</option>
+            <option value="В процес">В процес</option>
+            <option value="Прочетена">Прочетена</option>
+        </select>
+    </div>
+
+    <div class="mb-3">
         <label class="form-label">PDF файл на книгата</label>
 
         @if (!string.IsNullOrEmpty(Model.PdfPath))

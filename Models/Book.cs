@@ -8,6 +8,7 @@
         public string Genre { get; set; } = string.Empty;
         public int Year { get; set; }
         public string Description { get; set; } = string.Empty;
+        public string Status { get; set; } = "Ще чета";
         public string? PdfPath { get;  set; }
     }
 }
