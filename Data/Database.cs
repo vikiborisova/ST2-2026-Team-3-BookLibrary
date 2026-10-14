@@ -1,44 +1,42 @@
 ﻿using BookLibrary.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace BookLibrary.Data
 {
     public class Database : IDatabase
     {
-        private readonly List<Book> books = new();
-        private readonly List<User> users = new();
-        private int nextId = 1;
-        private int nextUserId = 1;
 
+        private readonly AppDbContext context;
 
-        
-        public Database()
+        public Database(AppDbContext context)
         {
-            // Тест
-            RegisterUser("pesho", "123");
-            AddBook(new Book { Title = "Под игото", Author = "Иван Вазов", Genre = "Роман", Year = 1894, Status = "Прочетена", UserId = 1 });
+            this.context = context;
         }
+
 
         public User? RegisterUser(string username, string password)
         {
-            if (users.Any(u => u.Username.Equals(username, StringComparison.OrdinalIgnoreCase)))
+            if (context.Users.Any(u => u.Username.ToLower() == username.ToLower()))
             {
                 return null;
             }
-            var user = new User { Id = nextUserId++, Username = username, Password = password };
-            users.Add(user);
+
+            var user = new User { Username = username, Password = password };
+            context.Users.Add(user);
+                   context.SaveChanges();
             return user;
         }
 
         public User? AuthenticateUser(string username, string password)
         {
-            return users.FirstOrDefault(u => u.Username.Equals(username, StringComparison.OrdinalIgnoreCase) && u.Password == password);
+            return context.Users.FirstOrDefault(u => u.Username.ToLower() == username.ToLower() && u.Password == password);
         }
 
 
         public void AddBook(Book book)
         {
-            book.Id = nextId++;
-            books.Add(book);
+            context.Books.Add(book);
+            context.SaveChanges();
         }
 
         public void DeleteBook(int id)
@@ -46,7 +44,8 @@ namespace BookLibrary.Data
             var book = GetBookById(id);
             if (book != null)
             {
-                books.Remove(book);
+                context.Books.Remove(book);
+                context.SaveChanges();
             }
         }
 
@@ -55,7 +54,7 @@ namespace BookLibrary.Data
         // Select with Filter
         public List<Book> GetAllBooks(int userId, string? search = null, string? genre = null)
         {
-            var query = books.Where(b => b.UserId == userId).AsQueryable();
+            var query = context.Books.Where(b => b.UserId == userId).AsQueryable();
 
             if (!string.IsNullOrWhiteSpace(search))
             {
@@ -75,7 +74,7 @@ namespace BookLibrary.Data
 
         public Book? GetBookById(int id)
         {
-            return books.FirstOrDefault(b => b.Id == id);
+            return context.Books.FirstOrDefault(b => b.Id == id);
         }
 
         public void UpdateBook(Book updatedBook)
@@ -90,6 +89,8 @@ namespace BookLibrary.Data
                 existingBook.Description = updatedBook.Description;
                 existingBook.Status = updatedBook.Status;
                 existingBook.PdfPath = updatedBook.PdfPath;
+
+                context.SaveChanges();
             }
         }
     }
