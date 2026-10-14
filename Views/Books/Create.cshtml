@@ -30,6 +30,14 @@
         <textarea asp-for="Description" class="form-control" rows="3"></textarea>
     </div>
     <div class="mb-3">
+        <label asp-for="Status" class="form-label">Статус на четене</label>
+        <select asp-for="Status" class="form-select">
+            <option value="Ще чета">Ще чета</option>
+            <option value="В процес">В процес</option>
+            <option value="Прочетена">Прочетена</option>
+        </select>
+    </div>
+    <div class="mb-3">
         <label class="form-label">Прикачи PDF файл</label>
         <input type="file" name="pdfFile" accept=".pdf" class="form-control" />
     </div>
