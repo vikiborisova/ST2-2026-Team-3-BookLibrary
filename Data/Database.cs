@@ -5,10 +5,36 @@ namespace BookLibrary.Data
     public class Database : IDatabase
     {
         private readonly List<Book> books = new();
+        private readonly List<User> users = new();
         private int nextId = 1;
+        private int nextUserId = 1;
 
 
-        // Insert
+        
+        public Database()
+        {
+            // Тест
+            RegisterUser("pesho", "123");
+            AddBook(new Book { Title = "Под игото", Author = "Иван Вазов", Genre = "Роман", Year = 1894, Status = "Прочетена", UserId = 1 });
+        }
+
+        public User? RegisterUser(string username, string password)
+        {
+            if (users.Any(u => u.Username.Equals(username, StringComparison.OrdinalIgnoreCase)))
+            {
+                return null;
+            }
+            var user = new User { Id = nextUserId++, Username = username, Password = password };
+            users.Add(user);
+            return user;
+        }
+
+        public User? AuthenticateUser(string username, string password)
+        {
+            return users.FirstOrDefault(u => u.Username.Equals(username, StringComparison.OrdinalIgnoreCase) && u.Password == password);
+        }
+
+
         public void AddBook(Book book)
         {
             book.Id = nextId++;
@@ -27,9 +53,9 @@ namespace BookLibrary.Data
 
 
         // Select with Filter
-        public List<Book> GetAllBooks(string? search = null, string? genre = null)
+        public List<Book> GetAllBooks(int userId, string? search = null, string? genre = null)
         {
-            var query = books.AsQueryable();
+            var query = books.Where(b => b.UserId == userId).AsQueryable();
 
             if (!string.IsNullOrWhiteSpace(search))
             {

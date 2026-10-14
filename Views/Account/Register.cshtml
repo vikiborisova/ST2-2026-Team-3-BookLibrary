@@ -1,0 +1,33 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+
+@{
+    ViewData["Title"] = "Регистрация";
+}
+
+<div class="row justify-content-center mt-5">
+    <div class="col-md-4">
+        <h2 class="mb-3 text-center">📝 Регистрация на нов профил</h2>
+
+        <form asp-action="Register" method="post">
+            <div asp-validation-summary="All" class="text-danger mb-3"></div>
+
+            <div class="mb-3">
+                <label class="form-label">Потребителско име</label>
+                <input type="text" name="username" class="form-control" required />
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Парола</label>
+                <input type="password" name="password" class="form-control" required />
+            </div>
+
+            <button type="submit" class="btn btn-success w-100 mb-3">Регистрирай се</button>
+
+            <div class="text-center">
+                <a asp-action="Login">Вече имате профил? Влезте оттук</a>
+            </div>
+        </form>
+    </div>
+</div>

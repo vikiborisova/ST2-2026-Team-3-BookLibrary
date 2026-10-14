@@ -15,10 +15,21 @@ namespace BookLibrary.Controllers
             this.env = env;
         }
 
+        private int? GetCurrentUserId()
+        {
+            return HttpContext.Session.GetInt32("UserId");
+        }
+
         // SELECT WITH FILTER
         public IActionResult Index(string? search, string? genre)
         {
-            var books = db.GetAllBooks(search, genre);
+            int? userId = GetCurrentUserId();
+            if (userId == null)
+            {
+                return RedirectToAction("Login", "Account");
+            }
+
+            var books = db.GetAllBooks(userId.Value, search, genre);
             ViewData["CurrentSearch"] = search;
             ViewData["CurrentGenre"] = genre;
 
@@ -29,6 +40,8 @@ namespace BookLibrary.Controllers
         // INSERT - GET
         public IActionResult Create()
         {
+            if (GetCurrentUserId() == null) return RedirectToAction("Login", "Account");
+            
             ViewData["Genres"] = GenreHelper.GetGenreSelectList();
             return View();
         }
@@ -38,6 +51,9 @@ namespace BookLibrary.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(Book book, IFormFile? pdfFile)
         {
+            int? userId = GetCurrentUserId();
+            if (userId == null) return RedirectToAction("Login", "Account");
+
             if (ModelState.IsValid)
             {
                 if (pdfFile != null && pdfFile.Length > 0)
@@ -55,6 +71,7 @@ namespace BookLibrary.Controllers
 
                     book.PdfPath = "/uploads/" + uniqueFileName;
                 }
+                book.UserId = userId.Value;
 
                 db.AddBook(book);
                 return RedirectToAction(nameof(Index));
@@ -67,8 +84,10 @@ namespace BookLibrary.Controllers
         // EDIT - GET
         public IActionResult Edit(int id)
         {
+            if (GetCurrentUserId() == null) return RedirectToAction("Login", "Account");
+
             var book = db.GetBookById(id);
-            if (book == null) return NotFound();
+            if (book == null || book.UserId != GetCurrentUserId()) return NotFound();
 
             ViewData["Genres"] = GenreHelper.GetGenreSelectList(book.Genre);
             return View(book);
@@ -78,6 +97,9 @@ namespace BookLibrary.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, Book book, IFormFile? pdfFile)
         {
+            int? userId = GetCurrentUserId();
+            if (userId == null) return RedirectToAction("Login", "Account");
+
             if (id != book.Id) return NotFound();
 
             var existingBook = db.GetBookById(id);
@@ -105,6 +127,7 @@ namespace BookLibrary.Controllers
                 {
                     book.PdfPath = existingBook.PdfPath;
                 }
+                book.UserId = existingBook.UserId;
 
                 db.UpdateBook(book);
                 return RedirectToAction(nameof(Index));
@@ -118,8 +141,11 @@ namespace BookLibrary.Controllers
         // DELETE - GET
         public IActionResult Delete(int id)
         {
+            if (GetCurrentUserId() == null) return RedirectToAction("Login", "Account");
+
             var book = db.GetBookById(id);
-            if (book == null) return NotFound();
+            if (book == null || book.UserId != GetCurrentUserId()) return NotFound();
+
             return View(book);
         }
 
@@ -128,7 +154,15 @@ namespace BookLibrary.Controllers
         [ValidateAntiForgeryToken]
         public IActionResult DeleteConfirmed(int id)
         {
-            db.DeleteBook(id);
+            int? userId = GetCurrentUserId();
+            if (userId == null) return RedirectToAction("Login", "Account");
+
+            var book = db.GetBookById(id);
+            if (book != null && book.UserId == userId.Value)
+            {
+                db.DeleteBook(id);
+            }
+
             return RedirectToAction(nameof(Index));
         }
     }

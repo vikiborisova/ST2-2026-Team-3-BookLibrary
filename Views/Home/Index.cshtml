@@ -9,7 +9,7 @@
                 <h1>Всяка книга<br>си има място.</h1>
                 <p class="lead my-4">Качи книгите си като PDF, подреди ги на собствен рафт и ги отвори от различни устройства.</p>
                 <div class="d-flex flex-wrap gap-3">
-                    <a href="/register" class="btn btn-ink">Качи първата си книга</a>
+                    <a asp-controller="Books" asp-action="Create" class="btn btn-ink">Качи първата си книга</a>
                     <a href="#kak" class="btn btn-line">Как работи</a>
                 </div>
             </div>
@@ -79,7 +79,7 @@
             <div class="book-cta__text">
                 <h2>Остави книгите си да се подредят.</h2>
                 <p>Безплатно за първите ти книги.</p>
-                <a href="/register" class="btn btn-ink">Създай рафт</a>
+                <a asp-controller="Books" asp-action="Create" class="btn btn-ink">Създай рафт</a>
             </div>
         </div>
     </div>
