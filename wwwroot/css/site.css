@@ -245,7 +245,14 @@ h1, h2, h3, .brand {
         margin-bottom: 1.25rem;
     }
 
-@@media (min-width: 992px) {
+.full-bleed {
+    width: 100vw;
+    position: relative;
+    left: 50%;
+    margin-left: -50vw;
+}
+
+@media (min-width: 992px) {
     /* илюстрацията е 16:9, а текстът се мери спрямо нея, затова остава точно в книгата */
     .book-cta {
         aspect-ratio: 16/9;
@@ -286,6 +293,13 @@ h1, h2, h3, .brand {
             font-size: 1.2cqw;
             padding: .7cqw 1.6cqw;
         }
+}
+
+.full-bleed {
+    width: 100vw;
+    position: relative;
+    left: 50%;
+    margin-left: -50vw;
 }
 
 footer {
