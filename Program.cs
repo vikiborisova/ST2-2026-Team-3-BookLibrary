@@ -8,6 +8,13 @@ namespace BookLibrary
         {
             var builder = WebApplication.CreateBuilder(args);
 
+            builder.Services.AddSession(options =>
+            {
+                options.IdleTimeout = TimeSpan.FromMinutes(30);
+                options.Cookie.HttpOnly = true;
+                options.Cookie.IsEssential = true;
+            });
+
             builder.Services.AddSingleton<IDatabase, Database>();
 
             // Add services to the container.
@@ -28,11 +35,14 @@ namespace BookLibrary
 
             app.UseRouting();
 
+            app.UseSession();
+
             app.UseAuthorization();
 
             app.MapControllerRoute(
                 name: "default",
-                pattern: "{controller=Books}/{action=Index}/{id?}");
+                pattern: "{controller=Home}/{action=Index}/{id?}");
+
 
             app.Run();
         }

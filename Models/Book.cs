@@ -10,5 +10,8 @@
         public string Description { get; set; } = string.Empty;
         public string Status { get; set; } = "Ще чета";
         public string? PdfPath { get;  set; }
+
+
+        public int UserId { get; set; }
     }
 }
