@@ -15,6 +15,17 @@ namespace BookLibrary.Data
             books.Add(book);
         }
 
+        public void DeleteBook(int id)
+        {
+            var book = GetBookById(id);
+            if (book != null)
+            {
+                books.Remove(book);
+            }
+        }
+
+
+
         // Select with Filter
         public List<Book> GetAllBooks(string? search = null, string? genre = null)
         {
@@ -39,6 +50,20 @@ namespace BookLibrary.Data
         public Book? GetBookById(int id)
         {
             return books.FirstOrDefault(b => b.Id == id);
+        }
+
+        public void UpdateBook(Book updatedBook)
+        {
+            var existingBook = GetBookById(updatedBook.Id);
+            if (existingBook != null)
+            {
+                existingBook.Title = updatedBook.Title;
+                existingBook.Author = updatedBook.Author;
+                existingBook.Genre = updatedBook.Genre;
+                existingBook.Year = updatedBook.Year;
+                existingBook.Description = updatedBook.Description;
+                existingBook.PdfPath = updatedBook.PdfPath;
+            }
         }
     }
 }

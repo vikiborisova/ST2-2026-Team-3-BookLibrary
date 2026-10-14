@@ -6,7 +6,7 @@
 
 <h2>Добавяне на нова книга</h2>
 
-<form asp-action="Create" method="post">
+<form asp-action="Create" method="post" enctype="multipart/form-data">
     <div class="form-group mb-3">
         <label asp-for="Title" class="control-label">Заглавие</label>
         <input asp-for="Title" class="form-control" required />
@@ -15,9 +15,11 @@
         <label asp-for="Author" class="control-label">Автор</label>
         <input asp-for="Author" class="form-control" required />
     </div>
-    <div class="form-group mb-3">
-        <label asp-for="Genre" class="control-label">Жанр</label>
-        <input asp-for="Genre" class="form-control" />
+    <div class="mb-3">
+        <label asp-for="Genre" class="form-label">Жанр</label>
+        <select asp-for="Genre" class="form-select" asp-items="ViewBag.Genres" required>
+            <option value="">-- Изберете жанр --</option>
+        </select>
     </div>
     <div class="form-group mb-3">
         <label asp-for="Year" class="control-label">Година на издаване</label>
@@ -26,6 +28,10 @@
     <div class="form-group mb-3">
         <label asp-for="Description" class="control-label">Описание</label>
         <textarea asp-for="Description" class="form-control" rows="3"></textarea>
+    </div>
+    <div class="mb-3">
+        <label class="form-label">Прикачи PDF файл</label>
+        <input type="file" name="pdfFile" accept=".pdf" class="form-control" />
     </div>
     <button type="submit" class="btn btn-success">Запази</button>
     <a asp-action="Index" class="btn btn-secondary">Отказ</a>

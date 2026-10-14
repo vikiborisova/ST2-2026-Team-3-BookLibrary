@@ -10,17 +10,18 @@
     <a asp-action="Create" class="btn btn-primary">Добави нова книга</a>
 </p>
 
-<!-- Select with Filter) -->
+<!-- Форма за търсене и филтриране по жанр -->
 <form method="get" asp-action="Index" class="row g-3 mb-4">
     <div class="col-md-5">
         <input type="text" name="search" value="@ViewData["CurrentSearch"]" class="form-control" placeholder="Търси по заглавие или автор..." />
     </div>
     <div class="col-md-4">
-        <input type="text" name="genre" value="@ViewData["CurrentGenre"]" class="form-control" placeholder="Жанр (напр. Роман)..." />
+        <select name="genre" class="form-select" asp-items="ViewBag.Genres">
+            <option value="">-- Всички жанрове --</option>
+        </select>
     </div>
     <div class="col-md-3">
-        <button type="submit" class="btn btn-secondary">Филтрирай</button>
-        <a asp-action="Index" class="btn btn-outline-secondary">Изчисти</a>
+        <button type="submit" class="btn btn-secondary w-100">Филтрирай</button>
     </div>
 </form>
 
@@ -32,6 +33,8 @@
             <th>Жанр</th>
             <th>Година</th>
             <th>Описание</th>
+            <th>PDF</th>
+            <th>Действия</th>
         </tr>
     </thead>
     <tbody>
@@ -43,6 +46,20 @@
                 <td>@item.Genre</td>
                 <td>@item.Year</td>
                 <td>@item.Description</td>
+                <td>
+                    @if (!string.IsNullOrEmpty(item.PdfPath))
+                    {
+                        <a href="@item.PdfPath" target="_blank" class="btn btn-sm btn-outline-danger">📄 Четете PDF</a>
+                    }
+                    else
+                    {
+                        <span class="text-muted">Няма файл</span>
+                    }
+                </td>
+                <td>
+                    <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-sm btn-warning">Редактирай</a>
+                    <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-sm btn-danger">Изтрий</a>
+                </td>
             </tr>
         }
     </tbody>
