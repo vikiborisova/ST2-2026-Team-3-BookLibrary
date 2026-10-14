@@ -226,7 +226,13 @@
             margin-bottom: 1.25rem;
         }
 
-    @@media (min-width: 992px) {
+    .full-bleed {
+        width: 100vw;
+        position: relative;
+        left: 50%;
+        margin-left: -50vw;
+
+     @@media (min-width: 992px) {
         /* илюстрацията е 16:9, а текстът се мери спрямо нея, затова остава точно в книгата */
         .book-cta {
             aspect-ratio: 16/9;
@@ -344,7 +350,7 @@
     </div>
 </section>
 
-<section id="kak" class="dark py-5">
+<section id="kak" class="dark full-bleed py-5">
     <div class="container py-lg-4">
         <h2 class="mb-5 display-6">Три стъпки до подреден рафт</h2>
         <div class="row g-5">
