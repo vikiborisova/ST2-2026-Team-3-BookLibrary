@@ -13,8 +13,8 @@
         <nav class="navbar navbar-expand-md py-3">
             <div class="container">
                <a class="navbar-brand" asp-controller="Home" asp-action="Index">
-               <img src="~/images/logo.png" alt="Shelfio" height="40">
-                  </a>
+    <img src="~/images/logo.png" alt="Shelfio">
+</a>
                 <button class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#nav" aria-label="Меню"><span class="navbar-toggler-icon"></span></button>
                 <div class="collapse navbar-collapse" id="nav">
                     <ul class="navbar-nav ms-auto align-items-md-center gap-md-3">
@@ -33,9 +33,11 @@
         </main> 
     </div>
 
-    <footer class="border-top footer text-muted">
-        <div class="container">
-            &copy; 2026 - BookLibrary - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+   <footer class="py-4">
+        <div class="container d-flex flex-wrap justify-content-between gap-2 small">
+            <span class="brand fw-semibold">Shelfio</span>
+            <span>&copy; 2026 Shelfio. Всички права запазени.</span>
+            <span><a href="/privacy">Поверителност</a> &nbsp; <a href="/contact">Контакти</a></span>
         </div>
     </footer>
     <script src="~/lib/jquery/dist/jquery.min.js"></script>

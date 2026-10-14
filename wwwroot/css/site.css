@@ -13,12 +13,9 @@ html {
 }
 
 html {
-  position: relative;
-  min-height: 100%;
-}
-
-body {
-  margin-bottom: 60px;
+    position: relative;
+    min-height: 100%;
+    height: 100%;
 }
 
 
@@ -34,6 +31,10 @@ body {
     font-family: Montserrat,system-ui,sans-serif;
     color: var(--purple);
     background: var(--apricot);
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    height: 100%;
 }
 
 h1, h2, h3, .brand {
@@ -77,6 +78,11 @@ h1, h2, h3, .brand {
         background: var(--purple);
         color: var(--apricot);
     }
+
+.navbar-brand img {
+    height: 80px;
+    width: auto;
+}
 
 .hero h1 {
     font-size: clamp(2.6rem,6vw,4.8rem);
@@ -305,6 +311,7 @@ h1, h2, h3, .brand {
 footer {
     background: var(--satin);
     color: var(--purple);
+    margin-top: auto;
 }
 
     footer a {
