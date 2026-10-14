@@ -20,3 +20,299 @@ html {
 body {
   margin-bottom: 60px;
 }
+
+
+:root {
+    --purple: #472950;
+    --lilac: #DDC3E0;
+    --satin: #F1A8B2;
+    --apricot: #FFEBE1;
+    --plum: #78201B;
+}
+
+body {
+    font-family: Montserrat,system-ui,sans-serif;
+    color: var(--purple);
+    background: var(--apricot);
+}
+
+h1, h2, h3, .brand {
+    font-family: Georgia,'Times New Roman',serif;
+}
+
+.navbar {
+    background: var(--apricot);
+}
+
+.navbar-brand img {
+    height: 36px;
+}
+
+.nav-link {
+    color: var(--purple);
+}
+
+.btn-ink {
+    background: var(--purple);
+    color: var(--apricot);
+    border-radius: 0;
+    padding: .75rem 1.5rem;
+    border: 2px solid var(--purple);
+}
+
+    .btn-ink:hover {
+        background: var(--apricot);
+        border-color: var(--purple);
+        color: var(--purple);
+    }
+
+.btn-line {
+    border: 2px solid var(--purple);
+    border-radius: 0;
+    padding: .7rem 1.5rem;
+    color: var(--purple);
+}
+
+    .btn-line:hover {
+        background: var(--purple);
+        color: var(--apricot);
+    }
+
+.hero h1 {
+    font-size: clamp(2.6rem,6vw,4.8rem);
+    line-height: 1;
+    font-weight: 600;
+}
+
+/* shelf animation */
+.shelf {
+    background: var(--lilac);
+    padding: 1.5rem 0 0;
+    position: relative;
+    overflow: hidden;
+    user-select: none;
+    touch-action: pan-y;
+    cursor: grab;
+}
+
+    .shelf.dragging {
+        cursor: grabbing;
+    }
+
+.books {
+    position: relative;
+    height: 330px;
+    perspective: 1200px;
+    border-bottom: 8px solid var(--purple);
+}
+
+.book {
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    transform-style: preserve-3d;
+}
+
+    .book .spine, .book .cover {
+        position: absolute;
+        top: 0;
+        left: 0;
+        height: 100%;
+        backface-visibility: hidden;
+    }
+
+    .book .spine {
+        width: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font: 600 .78rem/1 Montserrat,sans-serif;
+        letter-spacing: .06em;
+        writing-mode: vertical-rl;
+        white-space: nowrap;
+        overflow: hidden;
+    }
+
+    .book .cover {
+        width: var(--cover-w);
+        transform-origin: left center;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        padding: 1.2rem 1rem;
+        box-shadow: 0 10px 28px rgba(71,41,80,.4);
+    }
+
+.cover .ct {
+    font: 600 1.35rem/1.1 Georgia,'Times New Roman',serif;
+}
+
+.cover .ca {
+    font-size: .8rem;
+    opacity: .85;
+}
+
+.shelf-caption {
+    background: var(--purple);
+    color: var(--apricot);
+    padding: .9rem 1.1rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1rem;
+}
+
+    .shelf-caption .t {
+        font: 600 1.05rem Georgia,'Times New Roman',serif;
+    }
+
+    .shelf-caption .a {
+        font-size: .85rem;
+        color: var(--lilac);
+    }
+
+    .shelf-caption .btn {
+        background: var(--satin);
+        color: var(--purple);
+        border-radius: 0;
+        font-weight: 600;
+        white-space: nowrap;
+    }
+
+        .shelf-caption .btn:hover {
+            background: var(--apricot);
+        }
+
+.arrows button {
+    background: transparent;
+    border: 2px solid var(--purple);
+    color: var(--purple);
+    width: 44px;
+    height: 44px;
+}
+
+    .arrows button:hover {
+        background: var(--purple);
+        color: var(--apricot);
+    }
+
+.feature {
+    border-left: 4px solid var(--c);
+    padding-left: 1.1rem;
+}
+
+    .feature h3 {
+        font-size: 1.35rem;
+    }
+
+.dark {
+    background: var(--purple);
+    color: var(--apricot);
+}
+
+    .dark .muted {
+        color: var(--lilac);
+    }
+
+/* ---------- CTA с илюстрация ---------- */
+.book-cta {
+    max-width: 1200px;
+    margin: 0 auto;
+    min-height: 440px;
+    padding: 2rem 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--lilac) url('/images/BookIllustration.svg') center/cover no-repeat;
+    container-type: inline-size;
+}
+
+.book-cta__text {
+    background: var(--apricot);
+    border: 3px solid var(--purple);
+    padding: 2rem 1.5rem;
+    max-width: 420px;
+    text-align: center;
+}
+
+    .book-cta__text h2 {
+        font-size: 1.9rem;
+        line-height: 1.1;
+        margin-bottom: .75rem;
+    }
+
+    .book-cta__text p {
+        margin-bottom: 1.25rem;
+    }
+
+.full-bleed {
+    width: 100vw;
+    position: relative;
+    left: 50%;
+    margin-left: -50vw;
+}
+
+@media (min-width: 992px) {
+    /* илюстрацията е 16:9, а текстът се мери спрямо нея, затова остава точно в книгата */
+    .book-cta {
+        aspect-ratio: 16/9;
+        min-height: 0;
+        padding: 0;
+        display: block;
+        position: relative;
+        background-size: 100% 100%;
+    }
+
+    .book-cta__text {
+        position: absolute;
+        left: 35.85%;
+        top: 39%;
+        width: 28.3%;
+        height: 53%;
+        background: none;
+        border: 0;
+        padding: 0;
+        max-width: none;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+    }
+
+        .book-cta__text h2 {
+            font-size: 2.6cqw;
+            margin-bottom: 1.2cqw;
+        }
+
+        .book-cta__text p {
+            font-size: 1.25cqw;
+            margin-bottom: 1.6cqw;
+        }
+
+        .book-cta__text .btn {
+            font-size: 1.2cqw;
+            padding: .7cqw 1.6cqw;
+        }
+}
+
+.full-bleed {
+    width: 100vw;
+    position: relative;
+    left: 50%;
+    margin-left: -50vw;
+}
+
+footer {
+    background: var(--satin);
+    color: var(--purple);
+}
+
+    footer a {
+        color: inherit;
+    }
+
+:focus-visible {
+    outline: 3px solid var(--satin);
+    outline-offset: 2px;
+}
+
