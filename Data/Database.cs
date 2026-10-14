@@ -62,6 +62,7 @@ namespace BookLibrary.Data
                 existingBook.Genre = updatedBook.Genre;
                 existingBook.Year = updatedBook.Year;
                 existingBook.Description = updatedBook.Description;
+                existingBook.PdfPath = updatedBook.PdfPath;
             }
         }
     }

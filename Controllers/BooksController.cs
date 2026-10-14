@@ -36,13 +36,30 @@ namespace BookLibrary.Controllers
         // INSERT - POST
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Create(Book book)
+        public async Task<IActionResult> Create(Book book, IFormFile? pdfFile)
         {
             if (ModelState.IsValid)
             {
+                if (pdfFile != null && pdfFile.Length > 0)
+                {
+                    string uploadsFolder = Path.Combine(env.WebRootPath, "uploads");
+                    if (!Directory.Exists(uploadsFolder)) Directory.CreateDirectory(uploadsFolder);
+
+                    string uniqueFileName = Guid.NewGuid().ToString() + "_" + pdfFile.FileName;
+                    string filePath = Path.Combine(uploadsFolder, uniqueFileName);
+
+                    using (var fileStream = new FileStream(filePath, FileMode.Create))
+                    {
+                        await pdfFile.CopyToAsync(fileStream);
+                    }
+
+                    book.PdfPath = "/uploads/" + uniqueFileName;
+                }
+
                 db.AddBook(book);
                 return RedirectToAction(nameof(Index));
             }
+
             ViewData["Genres"] = GenreHelper.GetGenreSelectList(book.Genre);
             return View(book);
         }
@@ -63,8 +80,31 @@ namespace BookLibrary.Controllers
         {
             if (id != book.Id) return NotFound();
 
+            var existingBook = db.GetBookById(id);
+            if (existingBook == null) return NotFound();
+
             if (ModelState.IsValid)
             {
+                if (pdfFile != null && pdfFile.Length > 0)
+                {
+                    string uploadsFolder = Path.Combine(env.WebRootPath, "uploads");
+                    if (!Directory.Exists(uploadsFolder)) Directory.CreateDirectory(uploadsFolder);
+
+                    string uniqueFileName = Guid.NewGuid().ToString() + "_" + pdfFile.FileName;
+                    string filePath = Path.Combine(uploadsFolder, uniqueFileName);
+
+                    using (var fileStream = new FileStream(filePath, FileMode.Create))
+                    {
+                        await pdfFile.CopyToAsync(fileStream);
+                    }
+
+
+                    book.PdfPath = "/uploads/" + uniqueFileName;
+                }
+                else
+                {
+                    book.PdfPath = existingBook.PdfPath;
+                }
 
                 db.UpdateBook(book);
                 return RedirectToAction(nameof(Index));

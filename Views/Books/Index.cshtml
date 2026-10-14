@@ -33,6 +33,7 @@
             <th>Жанр</th>
             <th>Година</th>
             <th>Описание</th>
+            <th>PDF</th>
             <th>Действия</th>
         </tr>
     </thead>
@@ -45,6 +46,16 @@
                 <td>@item.Genre</td>
                 <td>@item.Year</td>
                 <td>@item.Description</td>
+                <td>
+                    @if (!string.IsNullOrEmpty(item.PdfPath))
+                    {
+                        <a href="@item.PdfPath" target="_blank" class="btn btn-sm btn-outline-danger">📄 Четете PDF</a>
+                    }
+                    else
+                    {
+                        <span class="text-muted">Няма файл</span>
+                    }
+                </td>
                 <td>
                     <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-sm btn-warning">Редактирай</a>
                     <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-sm btn-danger">Изтрий</a>

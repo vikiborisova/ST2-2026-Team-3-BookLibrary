@@ -7,8 +7,8 @@
 <h2>Редактиране на книга</h2>
 
 <form asp-action="Edit" method="post" enctype="multipart/form-data">
-    <!-- Скрито поле за ID, за да не се губи при POST заявката -->
     <input type="hidden" asp-for="Id" />
+    <input type="hidden" asp-for="PdfPath" />
 
 
     <div class="mb-3">
@@ -36,6 +36,25 @@
     <div class="mb-3">
         <label asp-for="Description" class="form-label">Бележки / Описание</label>
         <textarea asp-for="Description" class="form-control" rows="3"></textarea>
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">PDF файл на книгата</label>
+
+        @if (!string.IsNullOrEmpty(Model.PdfPath))
+        {
+            <div class="mb-2">
+                <span class="text-success">✔ Има качен файл:</span>
+                <a href="@Model.PdfPath" target="_blank" class="btn btn-sm btn-outline-danger ms-2">Преглед на текущия PDF</a>
+            </div>
+        }
+        else
+        {
+            <div class="mb-2 text-muted">Няма качен PDF файл в момента.</div>
+        }
+
+        <input type="file" name="pdfFile" accept=".pdf" class="form-control" />
+        <div class="form-text">Изберете нов файл само ако желаете да смените текущия.</div>
     </div>
 
     <button type="submit" class="btn btn-success">Запази промените</button>
