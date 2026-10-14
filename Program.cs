@@ -1,4 +1,5 @@
 using BookLibrary.Data;
+using Microsoft.EntityFrameworkCore;
 
 namespace BookLibrary
 {
@@ -8,6 +9,11 @@ namespace BookLibrary
         {
             var builder = WebApplication.CreateBuilder(args);
 
+            builder.Services.AddDbContext<AppDbContext>(options =>
+                options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection")));
+
+            builder.Services.AddScoped<IDatabase, Database>();
+
             builder.Services.AddSession(options =>
             {
                 options.IdleTimeout = TimeSpan.FromMinutes(30);
@@ -15,7 +21,6 @@ namespace BookLibrary
                 options.Cookie.IsEssential = true;
             });
 
-            builder.Services.AddSingleton<IDatabase, Database>();
 
             // Add services to the container.
             builder.Services.AddControllersWithViews();
@@ -28,6 +33,12 @@ namespace BookLibrary
                 app.UseExceptionHandler("/Home/Error");
                 // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
                 app.UseHsts();
+            }
+
+            using (var scope = app.Services.CreateScope())
+            {
+                var dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+                dbContext.Database.EnsureCreated();
             }
 
             app.UseHttpsRedirection();
