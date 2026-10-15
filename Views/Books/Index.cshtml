@@ -33,6 +33,7 @@
             <th>Жанр</th>
             <th>Година</th>
             <th>Описание</th>
+            <th>Статус</th>
             <th>PDF</th>
             <th>Действия</th>
         </tr>
@@ -46,6 +47,20 @@
                 <td>@item.Genre</td>
                 <td>@item.Year</td>
                 <td>@item.Description</td>
+                <td>
+                    @if (item.Status == "Прочетена")
+                    {
+                        <span class="badge bg-success">Прочетена</span>
+                    }
+                    else if (item.Status == "В процес")
+                    {
+                        <span class="badge bg-warning text-dark">В процес</span>
+                    }
+                    else
+                    {
+                        <span class="badge bg-secondary">Ще чета</span>
+                    }
+                </td>
                 <td>
                     @if (!string.IsNullOrEmpty(item.PdfPath))
                     {

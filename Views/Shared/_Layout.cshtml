@@ -19,9 +19,28 @@
                 <div class="collapse navbar-collapse" id="nav">
                     <ul class="navbar-nav ms-auto align-items-md-center gap-md-3">
                         <li class="nav-item"><a class="nav-link" asp-controller="Home" asp-action="Index">Начална страница</a></li>
-                        <li class="nav-item"><a class="nav-link" asp-controller="Account" asp-action="Login">Регистрация</a></li>
-                        <li class="nav-item"><a class="nav-link" asp-controller="Books" asp-action="Index">Добави книга</a></li
-                        <li class="nav-item"><a class="btn btn-ink" href="/прф">Профил</a></li>
+                        <li class="nav-item"><a class="nav-link" asp-controller="Books" asp-action="Index">Добави книга</a></li>
+                    </ul>
+
+                    <ul class="navbar-nav ms-auto">
+                        @if (Context.Session.GetInt32("UserId") != null)
+                        {
+                            <li class="nav-item">
+                                <span class="navbar-text me-3">Здравейте, <strong>@Context.Session.GetString("Username")</strong>!</span>
+                            </li>
+                            <li class="nav-item">
+                                <a class="btn btn-outline-danger btn-sm mt-1" asp-controller="Account" asp-action="Logout">Изход</a>
+                            </li>
+                        }
+                        else
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link" asp-controller="Account" asp-action="Login">Вход</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" asp-controller="Account" asp-action="Register">Регистрация</a>
+                            </li>
+                        }
                     </ul>
                 </div>
             </div>
@@ -33,13 +52,15 @@
         </main> 
     </div>
 
-   <footer class="py-4">
-        <div class="container d-flex flex-wrap justify-content-between gap-2 small">
-            <span class="brand fw-semibold">Shelfio</span>
-            <span>&copy; 2026 Shelfio. Всички права запазени.</span>
-            <span><a href="/privacy">Поверителност</a> &nbsp; <a href="/contact">Контакти</a></span>
-        </div>
-    </footer>
+  <footer class="py-4">
+    <div class="container d-flex flex-wrap justify-content-between align-items-center gap-2 small">
+        <a asp-controller="Home" asp-action="Index" class="footer-brand">
+            <img src="~/images/logo.png" alt="Shelfio">
+        </a>
+        <span>&copy; 2026 Shelfio. Всички права запазени.</span>
+        
+    </div>
+</footer>
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>

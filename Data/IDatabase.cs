@@ -4,7 +4,13 @@ namespace BookLibrary.Data
 {
     public interface IDatabase
     {
-        List<Book> GetAllBooks(string? search = null, string? genre = null);
+        // Методи за потребители
+        User? RegisterUser(string username, string password);
+        User? AuthenticateUser(string username, string password);
+
+
+        // Mетоди за книги
+        List<Book> GetAllBooks(int userId, string? search = null, string? genre = null);
         Book? GetBookById(int id);
         void AddBook(Book book);
 

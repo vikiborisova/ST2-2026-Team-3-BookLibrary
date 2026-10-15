@@ -356,3 +356,8 @@ footer {
     outline-offset: 2px;
 }
 
+.footer-brand img {
+    height: 50px;
+    width: auto;
+}
+

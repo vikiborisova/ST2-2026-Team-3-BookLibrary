@@ -1,4 +1,5 @@
 using BookLibrary.Data;
+using Microsoft.EntityFrameworkCore;
 
 namespace BookLibrary
 {
@@ -8,7 +9,18 @@ namespace BookLibrary
         {
             var builder = WebApplication.CreateBuilder(args);
 
-            builder.Services.AddSingleton<IDatabase, Database>();
+            builder.Services.AddDbContext<AppDbContext>(options =>
+                options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection")));
+
+            builder.Services.AddScoped<IDatabase, Database>();
+
+            builder.Services.AddSession(options =>
+            {
+                options.IdleTimeout = TimeSpan.FromMinutes(30);
+                options.Cookie.HttpOnly = true;
+                options.Cookie.IsEssential = true;
+            });
+
 
             // Add services to the container.
             builder.Services.AddControllersWithViews();
@@ -23,16 +35,25 @@ namespace BookLibrary
                 app.UseHsts();
             }
 
+            using (var scope = app.Services.CreateScope())
+            {
+                var dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+                dbContext.Database.EnsureCreated();
+            }
+
             app.UseHttpsRedirection();
             app.UseStaticFiles();
 
             app.UseRouting();
 
+            app.UseSession();
+
             app.UseAuthorization();
 
             app.MapControllerRoute(
                 name: "default",
-                pattern: "{controller=Books}/{action=Index}/{id?}");
+                pattern: "{controller=Home}/{action=Index}/{id?}");
+
 
             app.Run();
         }

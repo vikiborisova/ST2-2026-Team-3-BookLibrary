@@ -1,18 +1,42 @@
 ﻿using BookLibrary.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace BookLibrary.Data
 {
     public class Database : IDatabase
     {
-        private readonly List<Book> books = new();
-        private int nextId = 1;
+
+        private readonly AppDbContext context;
+
+        public Database(AppDbContext context)
+        {
+            this.context = context;
+        }
 
 
-        // Insert
+        public User? RegisterUser(string username, string password)
+        {
+            if (context.Users.Any(u => u.Username.ToLower() == username.ToLower()))
+            {
+                return null;
+            }
+
+            var user = new User { Username = username, Password = password };
+            context.Users.Add(user);
+                   context.SaveChanges();
+            return user;
+        }
+
+        public User? AuthenticateUser(string username, string password)
+        {
+            return context.Users.FirstOrDefault(u => u.Username.ToLower() == username.ToLower() && u.Password == password);
+        }
+
+
         public void AddBook(Book book)
         {
-            book.Id = nextId++;
-            books.Add(book);
+            context.Books.Add(book);
+            context.SaveChanges();
         }
 
         public void DeleteBook(int id)
@@ -20,16 +44,17 @@ namespace BookLibrary.Data
             var book = GetBookById(id);
             if (book != null)
             {
-                books.Remove(book);
+                context.Books.Remove(book);
+                context.SaveChanges();
             }
         }
 
 
 
         // Select with Filter
-        public List<Book> GetAllBooks(string? search = null, string? genre = null)
+        public List<Book> GetAllBooks(int userId, string? search = null, string? genre = null)
         {
-            var query = books.AsQueryable();
+            var query = context.Books.Where(b => b.UserId == userId).AsQueryable();
 
             if (!string.IsNullOrWhiteSpace(search))
             {
@@ -49,7 +74,7 @@ namespace BookLibrary.Data
 
         public Book? GetBookById(int id)
         {
-            return books.FirstOrDefault(b => b.Id == id);
+            return context.Books.FirstOrDefault(b => b.Id == id);
         }
 
         public void UpdateBook(Book updatedBook)
@@ -62,7 +87,10 @@ namespace BookLibrary.Data
                 existingBook.Genre = updatedBook.Genre;
                 existingBook.Year = updatedBook.Year;
                 existingBook.Description = updatedBook.Description;
+                existingBook.Status = updatedBook.Status;
                 existingBook.PdfPath = updatedBook.PdfPath;
+
+                context.SaveChanges();
             }
         }
     }
