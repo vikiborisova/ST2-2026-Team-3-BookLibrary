@@ -1,0 +1,83 @@
+﻿@{
+    var showRegister = ViewData["ShowRegister"] as bool? ?? false;
+}
+
+<div class="auth-page">
+    <div class="flip-main-container">
+        <div class="flip-card-inner @(showRegister ? "is-flipped" : "")" id="flipCard">
+
+            <!-- Login -->
+            <div class="auth-side auth-front" inert="@showRegister">
+                <div class="row g-0 h-100">
+                    <div class="col-md-5 d-none d-md-block">
+                        <img src="~/images/loginPhoto1.jpeg" class="side-img" alt="Login">
+                    </div>
+                    <div class="col-md-7 auth-form">
+                        <h2>Здравейте отново!</h2>
+                        <form asp-controller="Account" asp-action="Login" method="post">
+                            @if (!showRegister)
+                            {
+                                <div asp-validation-summary="All" class="text-danger mb-3"></div>
+                            }
+                            <div class="mb-4">
+                                <label for="loginUser">Потребителско име</label>
+                                <input id="loginUser" type="text" name="username"
+                                       class="form-control form-control-underline"
+                                       placeholder="Вашето потребителско име" required />
+                            </div>
+                            <div class="mb-4">
+                                <label for="loginPass">Парола</label>
+                                <input id="loginPass" type="password" name="password"
+                                       class="form-control form-control-underline"
+                                       placeholder="••••••••" required />
+                            </div>
+                            <button type="submit" class="btn btn-ink">Вход в профил</button>
+                            <p class="text-muted small" style="margin-top:10px;">
+                                Нямате акаунт?
+                                <a class="auth-link" asp-controller="Account" asp-action="Register"
+                                   data-flip data-title="Регистрация">Регистрация</a>
+                            </p>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Registration -->
+            <div class="auth-side auth-back" inert="@(!showRegister)">
+                <div class="row g-0 h-100">
+                    <div class="col-md-7 auth-form">
+                        <h2>Създай профил и подреди първия си рафт</h2>
+                        <form asp-controller="Account" asp-action="Register" method="post">
+                            @if (showRegister)
+                            {
+                                <div asp-validation-summary="All" class="text-danger mb-3"></div>
+                            }
+                            <div class="mb-4">
+                                <label for="regUser">Потребителско име</label>
+                                <input id="regUser" type="text" name="username"
+                                       class="form-control form-control-underline"
+                                       placeholder="Вашето потребителско име" required />
+                            </div>
+                            <div class="mb-4">
+                                <label for="regPass">Парола</label>
+                                <input id="regPass" type="password" name="password"
+                                       class="form-control form-control-underline"
+                                       placeholder="••••••••" required />
+                            </div>
+                            <button type="submit" class="btn btn-ink">Регистрирай се</button>
+                            <p class="text-muted small" style="margin-top:10px;">
+                                Вече имате профил?
+                                <a class="auth-link" asp-controller="Account" asp-action="Login"
+                                   data-flip data-title="Вход">Влез в акаунт</a>
+                            </p>
+                        </form>
+                    </div>
+                    <div class="col-md-5 d-none d-md-block">
+                        <img src="~/images/registerPhoto2.jpeg" class="side-img" alt="Register">
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
