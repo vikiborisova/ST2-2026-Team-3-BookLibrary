@@ -13,6 +13,7 @@ const items = [
 
 const wrap = document.getElementById('books'), shelf = document.getElementById('shelf');
 const capT = document.getElementById('capTitle'), capA = document.getElementById('capAuthor'), capO = document.getElementById('capOpen');
+const btnPrev = document.getElementById('prev'), btnNext = document.getElementById('next');
 const clamp = (v, a, b) => Math.min(b, Math.max(a, v));
 const last = items.length - 1;
 const GAP = 6;
@@ -54,21 +55,28 @@ function draw() {
     const cur = Math.round(pos);
     if (cur !== lastShown) {
         lastShown = cur;
-        capT.textContent = items[cur].t; capA.textContent = items[cur].a; capO.href = items[cur].pdf;
+        if (capT) capT.textContent = items[cur].t;
+        if (capA) capA.textContent = items[cur].a;
+        if (capO) capO.href = items[cur].pdf;   
     }
 }
 
 function loop() {
     pos += (target - pos) * 0.12;
     if (Math.abs(target - pos) < 0.001) { pos = target; running = false; }
-    draw();
-    if (running) requestAnimationFrame(loop);
+    try {
+        draw();
+    } finally {
+        
+        if (running) requestAnimationFrame(loop);
+    }
 }
 function kick() { if (!running) { running = true; requestAnimationFrame(loop); } }
 function set(v) { target = clamp(v, 0, last); kick(); }
 
-document.getElementById('next').onclick = () => set(Math.round(target) + 1);
-document.getElementById('prev').onclick = () => set(Math.round(target) - 1);
+if (btnNext) btnNext.onclick = () => set(Math.round(target) + 1);
+if (btnPrev) btnPrev.onclick = () => set(Math.round(target) - 1);
+
 shelf.addEventListener('wheel', e => {
     if (Math.abs(e.deltaX) > Math.abs(e.deltaY) || e.shiftKey) { e.preventDefault(); set(target + (e.deltaX || e.deltaY) / 300); }
 }, { passive: false });
