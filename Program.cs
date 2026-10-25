@@ -1,4 +1,6 @@
+using BookLibrary.Configuration;
 using BookLibrary.Data;
+using BookLibrary.Services;
 using Microsoft.EntityFrameworkCore;
 
 namespace BookLibrary
@@ -24,6 +26,15 @@ namespace BookLibrary
 
             // Add services to the container.
             builder.Services.AddControllersWithViews();
+
+            builder.Services.Configure<ExternalApisOptions>(
+                builder.Configuration.GetSection(ExternalApisOptions.SectionName));
+
+            builder.Services.AddHttpClient<IBookAiService, BookAiService>(client =>
+            {
+                client.BaseAddress = new Uri("https://generativelanguage.googleapis.com/");
+                client.Timeout = TimeSpan.FromSeconds(15);
+            });
 
             var app = builder.Build();
 
