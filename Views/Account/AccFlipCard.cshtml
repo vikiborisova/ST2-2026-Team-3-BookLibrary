@@ -1,4 +1,5 @@
-﻿@{
+﻿@model BookLibrary.Models.User
+@{
     var showRegister = ViewData["ShowRegister"] as bool? ?? false;
 }
 
@@ -53,16 +54,15 @@
                                 <div asp-validation-summary="All" class="text-danger mb-3"></div>
                             }
                             <div class="mb-4">
-                                <label for="regUser">Потребителско име</label>
-                                <input id="regUser" type="text" name="username"
-                                       class="form-control form-control-underline"
-                                       placeholder="Вашето потребителско име" required />
+                                <label asp-for="Username" class="form-label">Потребителско име</label>
+                                <input asp-for="Username" class="form-control form-control-underline" placeholder="Вашето потребителско име" />
+                                <span asp-validation-for="Username" class="text-danger small"></span>
                             </div>
+
                             <div class="mb-4">
-                                <label for="regPass">Парола</label>
-                                <input id="regPass" type="password" name="password"
-                                       class="form-control form-control-underline"
-                                       placeholder="••••••••" required />
+                                <label asp-for="Password" class="form-label">Парола</label>
+                                <input asp-for="Password" class="form-control form-control-underline" placeholder="••••••••" />
+                                <span asp-validation-for="Password" class="text-danger small"></span>
                             </div>
                             <button type="submit" class="btn btn-ink">Регистрирай се</button>
                             <p class="text-muted small" style="margin-top:10px;">

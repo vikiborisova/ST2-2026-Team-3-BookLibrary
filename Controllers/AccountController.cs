@@ -21,8 +21,15 @@ namespace BookLibrary.Controllers
 
         // LOGIN - POST
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public IActionResult Login(string username, string password)
         {
+            if (string.IsNullOrWhiteSpace(username) || string.IsNullOrWhiteSpace(password))
+            {
+                ModelState.AddModelError("", "Моля, попълнете всички полета.");
+                return View();
+            }
+            
             var user = db.AuthenticateUser(username, password);
             if (user != null)
             {
@@ -32,7 +39,7 @@ namespace BookLibrary.Controllers
                 return RedirectToAction("Index", "Books");
             }
 
-            ModelState.AddModelError("", "Ггрешно име или парола.");
+            ModelState.AddModelError("", "Ггрешно потребителско име или парола.");
             return View();
         }
 
@@ -44,19 +51,23 @@ namespace BookLibrary.Controllers
 
         // REGISTER - POST
         [HttpPost]
-        public IActionResult Register(string username, string password)
+        [ValidateAntiForgeryToken]
+        public IActionResult Register(User model)
         {
-            var user = db.RegisterUser(username, password);
-            if (user != null)
+            // Проверяваме дали моделът отговаря на изискванията в User.cs
+            if (ModelState.IsValid)
             {
-                HttpContext.Session.SetInt32("UserId", user.Id);
-                HttpContext.Session.SetString("Username", user.Username);
+                var registeredUser = db.RegisterUser(model.Username, model.Password);
+                if (registeredUser != null)
+                {
+                    TempData["SuccessMessage"] = "Успешна регистрация! Моля, влезте в профила си.";
+                    return RedirectToAction("Login");
+                }
 
-                return RedirectToAction("Index", "Books");
+                ModelState.AddModelError("Username", "Потребителското име вече е заето.");
             }
 
-            ModelState.AddModelError("Username", "Потребителското име вече е заето.");
-            return View();
+            return View(model);
         }
 
         // LOGOUT
