@@ -383,3 +383,51 @@ footer {
         padding: 10px 0;
     }
 }
+
+/* ---------- AI препоръки в каросела ---------- */
+.shelf-caption .label {
+    font-size: .7rem;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+    color: var(--satin);
+    margin-bottom: .15rem;
+}
+
+.arrows .rec-more {
+    width: auto;
+    padding: 0 1.1rem;
+    font-weight: 600;
+    margin-left: .5rem;
+}
+
+    .arrows .rec-more:disabled {
+        opacity: .45;
+        cursor: not-allowed;
+    }
+
+        .arrows .rec-more:disabled:hover {
+            background: transparent;
+            color: var(--purple);
+        }
+
+.rec-info {
+    background: var(--lilac);
+    border-left: 6px solid var(--purple);
+    padding: 1rem 1.25rem;
+    margin-top: 1rem;
+}
+
+    .rec-info h3 {
+        font-size: 1.25rem;
+        margin: 0;
+    }
+
+    .rec-info .rec-author {
+        font-size: .85rem;
+        opacity: .8;
+        margin-bottom: .5rem;
+    }
+
+    .rec-info p:last-child {
+        margin: 0;
+    }

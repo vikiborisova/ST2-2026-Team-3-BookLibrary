@@ -36,6 +36,8 @@ namespace BookLibrary
                 client.Timeout = TimeSpan.FromSeconds(15);
             });
 
+            builder.Services.AddMemoryCache();
+
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.

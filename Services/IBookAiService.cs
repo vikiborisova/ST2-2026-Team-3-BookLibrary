@@ -4,6 +4,13 @@ namespace BookLibrary.Services
 {
     public interface IBookAiService
     {
-        Task<string> GetBookRecommendationsAsync(IEnumerable<Book> userBooks, CancellationToken cancellationToken = default);
+        /// <summary>
+        /// Връща до <paramref name="count"/> препоръки. Празен списък = услугата не е налична.
+        /// Ако потребителят няма книги, връща популярни книги.
+        /// </summary>
+        Task<IReadOnlyList<BookRecommendation>> GetBookRecommendationsAsync(
+            IEnumerable<Book> userBooks,
+            int count = 6,
+            CancellationToken cancellationToken = default);
     }
 }
