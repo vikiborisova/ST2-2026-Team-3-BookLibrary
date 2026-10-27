@@ -6,49 +6,83 @@
 
 <link rel="stylesheet" href="~/css/book-cards.css" asp-append-version="true" />
 
-<div class="row g-4 align-items-start">
-    <div class="col-md-4 d-flex justify-content-center">
-        <div class="book">
-            <div class="cover empty">@Model.Title</div>
+<div class="book-details">
+    <div class="row g-4 align-items-start">
+
+        <!-- Книгата -->
+        <div class="col-md-4 d-flex justify-content-center">
+            <div class="book">
+                <div class="cover empty">@Model.Title</div>
+            </div>
+        </div>
+
+        <!-- Информация -->
+        <div class="col-md-8">
+            <h2 class="mb-1">@Model.Title</h2>
+            <div class="author">@Model.Author</div>
+
+            <dl class="info-grid">
+                <dt>Заглавие</dt>
+                <dd>@Model.Title</dd>
+
+                <dt>Автор</dt>
+                <dd>@Model.Author</dd>
+
+                <dt>Жанр</dt>
+                <dd>@Model.Genre</dd>
+
+                <dt>Година</dt>
+                <dd>@Model.Year</dd>
+
+                <dt>Статус</dt>
+                <dd>
+                    @if (Model.Status == "Прочетена")
+                    {
+                        <span class="badge bg-success">Прочетена</span>
+                    }
+                    else if (Model.Status == "В процес")
+                    {
+                        <span class="badge bg-warning text-dark">В процес</span>
+                    }
+                    else
+                    {
+                        <span class="badge bg-secondary">Ще чета</span>
+                    }
+                </dd>
+
+                <dt>Описание</dt>
+                <dd class="description">@Model.Description</dd>
+            </dl>
+
+            <div class="d-flex flex-wrap gap-2">
+                <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-edit">Редактирай</a>
+                <a asp-action="Delete" asp-route-id="@Model.Id" class="btn btn-remove">Изтрий книгата</a>
+                <a asp-action="Index" class="btn btn-outline-secondary">← Към библиотеката</a>
+            </div>
         </div>
     </div>
 
-    <div class="col-md-8">
-        <h2 class="mb-1">@Model.Title</h2>
-        <p class="text-muted fs-5 mb-3">@Model.Author</p>
+    <!-- PDF -->
+    <section class="pdf-box">
+        <h4>PDF файл</h4>
 
-        <p class="mb-2">
-            <strong>Жанр:</strong> @Model.Genre
-            &nbsp;&nbsp;<strong>Година:</strong> @Model.Year
-        </p>
+        @if (!string.IsNullOrEmpty(Model.PdfPath))
+        {
+            <div class="d-flex flex-wrap gap-2">
+                <a href="@Model.PdfPath" target="_blank" class="btn btn-more">Отвори в нов прозорец</a>
 
-        <p class="mb-3">
-            <strong>Статус:</strong>
-            @if (Model.Status == "Прочетена")
-            {
-                <span class="badge bg-success">Прочетена</span>
-            }
-            else if (Model.Status == "В процес")
-            {
-                <span class="badge bg-warning text-dark">В процес</span>
-            }
-            else
-            {
-                <span class="badge bg-secondary">Ще чета</span>
-            }
-        </p>
+                <form asp-action="DeletePdf" asp-route-id="@Model.Id" method="post"
+                      onsubmit="return confirm('Сигурен ли си, че искаш да изтриеш PDF файла?');">
+                    <button type="submit" class="btn btn-remove">Изтрий PDF</button>
+                </form>
+            </div>
 
-        <h5>Описание</h5>
-        <p style="max-width:70ch">@Model.Description</p>
-
-        <div class="d-flex flex-wrap gap-2 mt-4">
-            @if (!string.IsNullOrEmpty(Model.PdfPath))
-            {
-                <a href="@Model.PdfPath" target="_blank" class="btn btn-outline-danger">📄 Четете PDF</a>
-            }
-            <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-warning">Редактирай</a>
-            <a asp-action="Delete" asp-route-id="@Model.Id" class="btn btn-danger">Изтрий</a>
-            <a asp-action="Index" class="btn btn-outline-secondary">← Към библиотеката</a>
-        </div>
-    </div>
+            <iframe src="@Model.PdfPath" title="PDF на @Model.Title"></iframe>
+        }
+        else
+        {
+            <p class="text-muted mb-2">Към тази книга няма качен PDF файл.</p>
+            <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-edit">Качи PDF</a>
+        }
+    </section>
 </div>

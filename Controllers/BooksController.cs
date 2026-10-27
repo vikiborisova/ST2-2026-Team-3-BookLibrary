@@ -172,5 +172,16 @@ namespace BookLibrary.Controllers
 
             return RedirectToAction(nameof(Index));
         }
+
+        // DETAILS
+        public IActionResult Details(int id)
+        {
+            if (GetCurrentUserId() == null) return RedirectToAction("Login", "Account");
+
+            var book = db.GetBookById(id);
+            if (book == null || book.UserId != GetCurrentUserId()) return NotFound();
+
+            return View(book);
+        }
     }
 }
