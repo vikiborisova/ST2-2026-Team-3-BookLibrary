@@ -58,15 +58,19 @@ namespace BookLibrary.Data
 
             if (!string.IsNullOrWhiteSpace(search))
             {
-                query = query.Where(b => b.Title.Contains(search, StringComparison.OrdinalIgnoreCase) ||
-                                         b.Author.Contains(search, StringComparison.OrdinalIgnoreCase) ||
-                                         b.Year.ToString().Equals(search) ||
-                                         b.Description.Contains(search, StringComparison.OrdinalIgnoreCase));
+                var searchLower = search.Trim().ToLower();
+                var isYear = int.TryParse(search.Trim(), out var searchYear);
+
+                query = query.Where(b =>
+                    b.Title.ToLower().Contains(searchLower) ||
+                    b.Author.ToLower().Contains(searchLower) ||
+                    (isYear && b.Year == searchYear) ||
+                    (b.Description != null && b.Description.ToLower().Contains(searchLower)));
             }
 
             if (!string.IsNullOrWhiteSpace(genre))
             {
-                query = query.Where(b => b.Genre.Contains(genre, StringComparison.OrdinalIgnoreCase));
+                query = query.Where(b => b.Genre.Contains(genre));
             }
 
             return query.ToList();
