@@ -184,5 +184,42 @@ namespace BookLibrary.Controllers
 
             return View(book);
         }
+
+        // DELETE PDF - POST
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult DeletePdf(int id)
+        {
+            int? userId = GetCurrentUserId();
+            if (userId == null) return RedirectToAction("Login", "Account");
+
+            var book = db.GetBookById(id);
+            if (book == null || book.UserId != userId.Value) return NotFound();
+
+            if (!string.IsNullOrEmpty(book.PdfPath))
+            {
+                // Изтриваме самия файл от wwwroot/uploads
+                string fileName = Path.GetFileName(book.PdfPath);
+                string filePath = Path.Combine(env.WebRootPath, "uploads", fileName);
+
+                try
+                {
+                    if (System.IO.File.Exists(filePath))
+                    {
+                        System.IO.File.Delete(filePath);
+                    }
+                }
+                catch (IOException)
+                {
+                    // Файлът може да е отворен от браузъра, махаме го от базата и без това
+                }
+
+                // Махаме пътя от базата
+                book.PdfPath = string.Empty;
+                db.UpdateBook(book);
+            }
+
+            return RedirectToAction(nameof(Details), new { id });
+        }
     }
 }
