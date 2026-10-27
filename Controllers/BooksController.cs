@@ -2,8 +2,11 @@
 using BookLibrary.Data;
 using BookLibrary.Models;
 using BookLibrary.Helpers;
-using BookLibrary.Services;
-using System.Threading;
+using System.IO;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Hosting;
+using System;
 
 namespace BookLibrary.Controllers
 {
@@ -11,12 +14,11 @@ namespace BookLibrary.Controllers
     {
         private readonly IDatabase db;
         private readonly IWebHostEnvironment env;
-        private readonly IBookAiService ai;
-        public BooksController(IDatabase db, IBookAiService ai, IWebHostEnvironment env)
+
+        public BooksController(IDatabase db, IWebHostEnvironment env)
         {
             this.db = db;
             this.env = env;
-            this.ai = ai;
         }
 
         private int? GetCurrentUserId()
@@ -25,7 +27,7 @@ namespace BookLibrary.Controllers
         }
 
         // SELECT WITH FILTER
-        public async Task<IActionResult> IndexAsync(string? search, string? genre, CancellationToken cancellationToken)
+        public IActionResult Index(string? search, string? genre)
         {
             int? userId = GetCurrentUserId();
             if (userId == null)
@@ -34,13 +36,11 @@ namespace BookLibrary.Controllers
             }
 
             var books = db.GetAllBooks(userId.Value, search, genre);
-            string aiRecommendations = await ai.GetBookRecommendationsAsync(books, cancellationToken);
 
             ViewData["CurrentSearch"] = search;
             ViewData["CurrentGenre"] = genre;
-            ViewData["AiRecommendations"] = aiRecommendations;
-
             ViewData["Genres"] = GenreHelper.GetGenreSelectList(genre);
+
             return View(books);
         }
 
@@ -48,7 +48,7 @@ namespace BookLibrary.Controllers
         public IActionResult Create()
         {
             if (GetCurrentUserId() == null) return RedirectToAction("Login", "Account");
-            
+
             ViewData["Genres"] = GenreHelper.GetGenreSelectList();
             return View();
         }
@@ -99,6 +99,7 @@ namespace BookLibrary.Controllers
             ViewData["Genres"] = GenreHelper.GetGenreSelectList(book.Genre);
             return View(book);
         }
+
         // EDIT - POST
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -127,7 +128,6 @@ namespace BookLibrary.Controllers
                         await pdfFile.CopyToAsync(fileStream);
                     }
 
-
                     book.PdfPath = "/uploads/" + uniqueFileName;
                 }
                 else
@@ -141,8 +141,9 @@ namespace BookLibrary.Controllers
             }
 
             ViewData["Genres"] = GenreHelper.GetGenreSelectList(book.Genre);
-            return View(book);
 
+            // ТОВА е редът, който липсваше и причиняваше грешката:
+            return View(book);
         }
 
         // DELETE - GET

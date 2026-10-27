@@ -9,21 +9,38 @@
                 <h1>Всяка книга<br>си има място.</h1>
                 <p class="lead my-4">Качи книгите си като PDF, подреди ги на собствен рафт и ги отвори от различни устройства.</p>
                 <div class="d-flex flex-wrap gap-3">
-                    <a asp-controller="Books" asp-action="Index" class="btn btn-ink" >Качи първата си книга</a>
+                    <a asp-controller="Books" asp-action="Index" class="btn btn-ink">Качи първата си книга</a>
                 </div>
             </div>
 
-            <!-- raft otstrani  -->
+            <!-- Каросел с AI препоръки -->
             <div class="col-lg-7">
-                <div class="shelf" id="shelf" aria-label="Рафт с книги – плъзни, за да избереш книга">
+                <div class="shelf" id="shelf" data-url="@Url.Action("Recommendations", "Home")"
+                     aria-label="Препоръчани книги – плъзни, за да избереш книга">
                     <div class="books" id="books"></div>
                 </div>
-                <div class="shelf-caption">
-                    <div><div class="t" id="capTitle"></div><div class="a" id="capAuthor"></div></div>
+
+                <div class="shelf-caption" aria-live="polite">
+                    <div>
+                        <div class="label" id="capLabel"></div>
+                        <div class="t" id="capTitle"></div>
+                        <div class="a" id="capAuthor"></div>
+                    </div>
                 </div>
-                <div class="arrows d-flex gap-2 mt-3">
+
+                <div class="arrows d-flex flex-wrap align-items-center gap-2 mt-3">
                     <button id="prev" aria-label="Предишна книга">&larr;</button>
                     <button id="next" aria-label="Следваща книга">&rarr;</button>
+                    <button id="info" type="button" class="rec-more" aria-expanded="false"
+                            aria-controls="recInfo" disabled>
+                        Повече информация
+                    </button>
+                </div>
+
+                <div class="rec-info" id="recInfo" hidden>
+                    <h3 id="recInfoTitle"></h3>
+                    <p class="rec-author" id="recInfoAuthor"></p>
+                    <p id="recInfoText"></p>
                 </div>
             </div>
         </div>
@@ -83,5 +100,3 @@
 @section Scripts {
     <script src="~/js/home.js" asp-append-version="true"></script>
 }
-
-

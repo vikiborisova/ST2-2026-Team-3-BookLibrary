@@ -1,7 +1,6 @@
 ﻿using System.Text;
 using System.Text.Encodings.Web;
 using System.Text.Json;
-using System.Text.Json.Serialization;
 using BookLibrary.Configuration;
 using BookLibrary.Models;
 using Microsoft.Extensions.Options;
@@ -20,6 +19,11 @@ namespace BookLibrary.Services
             Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping
         };
 
+        private const string JsonInstructions =
+            "Върни САМО JSON масив от обекти с полета: " +
+            "\"title\" (заглавие на български), \"author\" (автор) и " +
+            "\"description\" (2-3 изречения на български език защо книгата ще му хареса).";
+
         public BookAiService(HttpClient http, IOptions<ExternalApisOptions> options, ILogger<BookAiService> logger)
         {
             _http = http;
@@ -27,78 +31,123 @@ namespace BookLibrary.Services
             _logger = logger;
         }
 
-        public async Task<string> GetBookRecommendationsAsync(IEnumerable<Book> userBooks, CancellationToken cancellationToken = default)
+        public async Task<IReadOnlyList<BookRecommendation>> GetBookRecommendationsAsync(
+            IEnumerable<Book> userBooks, int count = 6, CancellationToken cancellationToken = default)
         {
             var apiKey = _options.GeminiApiKey?.Trim();
             if (string.IsNullOrWhiteSpace(apiKey))
             {
-                return "AI препоръките не са налични (липсва Gemini API ключ в конфигурацията).";
+                _logger.LogWarning("Липсва Gemini API ключ в конфигурацията.");
+                return Array.Empty<BookRecommendation>();
             }
 
             var model = string.IsNullOrWhiteSpace(_options.GeminiModel) ? "gemini-3-flash-preview" : _options.GeminiModel.Trim();
             var booksList = userBooks?.ToList() ?? new List<Book>();
 
             string prompt;
-            if (booksList.Any())
+            if (booksList.Count > 0)
             {
-                var bookTitles = string.Join(", ", booksList.Select(b => $"\"{b.Title}\" от {b.Author} ({b.Genre})"));
-                prompt = $"Потребителят има следните книги на своя личен книжен рафт: {bookTitles}. " +
-                         $"На базата на тези жанрове и автори, препоръчай му 3 нови интересни книги, които да прочете. " +
-                         $"Върни кратки, вдъхновяващи препоръки на български език с формат: Заглавие - Автор: Кратко описание защо ще му харесат.";
+                var bookTitles = string.Join("; ", booksList.Select(b => $"\"{b.Title}\" от {b.Author} ({b.Genre})"));
+                prompt = $"Потребителят има следните книги на своя личен рафт: {bookTitles}. " +
+                         $"На базата на тези жанрове и автори препоръчай точно {count} нови книги, " +
+                         $"които НЕ са сред изброените. " + JsonInstructions;
             }
             else
             {
-                prompt = "Потребителят все още няма добавени книги на своя книжен рафт. " +
-                         $"Моля, предложи му 3 актуални световни и български бестселъра към момента на български език " +
-                         $"във формат: Заглавие - Автор: Кратко описание.";
+                prompt = $"Потребителят все още няма книги на своя рафт. Предложи точно {count} разнообразни " +
+                         $"популярни книги към момента - световни и български бестселъри. " + JsonInstructions;
             }
 
             var requestBody = new
             {
                 contents = new[]
                 {
-                    new
-                    {
-                        role = "user",
-                        parts = new[] { new { text = prompt } }
-                    }
+                    new { role = "user", parts = new[] { new { text = prompt } } }
                 },
                 generationConfig = new
                 {
-                    temperature = 0.7 // По-висока температура за творчески препоръки
+                    temperature = 0.7,
+                    responseMimeType = "application/json",
+                    responseSchema = new
+                    {
+                        type = "ARRAY",
+                        items = new
+                        {
+                            type = "OBJECT",
+                            properties = new
+                            {
+                                title = new { type = "STRING" },
+                                author = new { type = "STRING" },
+                                description = new { type = "STRING" }
+                            },
+                            required = new[] { "title", "author", "description" }
+                        }
+                    }
                 }
             };
 
-            var serializedPayload = JsonSerializer.Serialize(requestBody, JsonOptions);
-            var endpoint = $"v1beta/models/{Uri.EscapeDataString(model)}:generateContent?key={Uri.EscapeDataString(apiKey)}";
+            var payload = JsonSerializer.Serialize(requestBody, JsonOptions);
+            var endpoint = $"v1beta/models/{Uri.EscapeDataString(model)}:generateContent";
 
             try
             {
-                using var content = new StringContent(serializedPayload, Encoding.UTF8, "application/json");
-                using var response = await _http.PostAsync(endpoint, content, cancellationToken);
+                using var request = new HttpRequestMessage(HttpMethod.Post, endpoint)
+                {
+                    Content = new StringContent(payload, Encoding.UTF8, "application/json")
+                };
+                // ключът е в header, а не в URL, за да не попада в логовете на HttpClient
+                request.Headers.Add("x-goog-api-key", apiKey);
+
+                using var response = await _http.SendAsync(request, cancellationToken);
+                var responseText = await response.Content.ReadAsStringAsync(cancellationToken);
 
                 if (!response.IsSuccessStatusCode)
                 {
-                    return "В момента ИИ услугите са натоварени. Опитайте по-късно.";
+                    _logger.LogWarning("Gemini върна {Status}: {Body}", (int)response.StatusCode, responseText);
+                    return Array.Empty<BookRecommendation>();
                 }
 
-                var responseText = await response.Content.ReadAsStringAsync(cancellationToken);
                 using var doc = JsonDocument.Parse(responseText);
-
-                var text = doc.RootElement
+                var parts = doc.RootElement
                     .GetProperty("candidates")[0]
                     .GetProperty("content")
-                    .GetProperty("parts")[0]
-                    .GetProperty("text")
-                    .GetString();
+                    .GetProperty("parts");
 
-                return text ?? "Няма получени препоръки от ИИ.";
+                var text = string.Concat(parts.EnumerateArray()
+                    .Select(p => p.TryGetProperty("text", out var t) ? t.GetString() : null));
+
+                var result = JsonSerializer.Deserialize<List<BookRecommendation>>(StripFences(text), JsonOptions)
+                             ?? new List<BookRecommendation>();
+
+                return result
+                    .Where(r => !string.IsNullOrWhiteSpace(r.Title))
+                    .Select(r => new BookRecommendation
+                    {
+                        Title = r.Title.Trim(),
+                        Author = r.Author?.Trim() ?? "",
+                        Description = r.Description?.Trim() ?? ""
+                    })
+                    .Take(count)
+                    .ToList();
             }
             catch (Exception ex)
             {
                 _logger.LogWarning(ex, "Грешка при връзка с Gemini за книжни препоръки.");
-                return "Възникна мрежова грешка при връзка с изкуствения интелект.";
+                return Array.Empty<BookRecommendation>();
             }
+        }
+
+        // За всеки случай, ако моделът върне ```json ... ```
+        private static string StripFences(string text)
+        {
+            text = text.Trim();
+            if (text.StartsWith("```"))
+            {
+                var nl = text.IndexOf('\n');
+                if (nl >= 0) text = text[(nl + 1)..];
+                text = text.TrimEnd('`', '\n', '\r', ' ');
+            }
+            return text;
         }
     }
 }
