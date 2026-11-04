@@ -4,32 +4,35 @@
     ViewData["Title"] = "Книги";
 }
 
-<link rel="stylesheet" href="~/css/book-cards.css" asp-append-version="true" />
+@section Styles {
+    <link rel="stylesheet" href="~/css/book-cards.css" asp-append-version="true" />
+}
 
-<h2 style="margin-bottom:15px">  Библиотека с книги</h2>
+<div class="page-head">
+    <h2 style="font-weight:1000;">Библиотека с книги</h2>
+    <a asp-action="Create" class="btn btn-ink">+ Добави нова книга</a>
+</div>
 
-<p>
-    <a asp-action="Create" class="btn-inkBooks" style="margin-bottom:15px; text-decoration:none;">Добави нова книга</a>
-</p>
-
-<!-- Форма за търсене и филтриране по жанр -->
-<form method="get" asp-action="Index" class="row g-3 mb-4">
-    <div class="col-md-5">
-        <input type="text" name="search" value="@ViewData["CurrentSearch"]" class="form-control" placeholder="Търси по заглавие или автор..." />
-    </div>
-    <div class="col-md-4">
-        <select name="genre" class="form-select" asp-items="ViewBag.Genres">
-            <option value="">-- Всички жанрове --</option>
-        </select>
-    </div>
-    <div class="col-md-3">
-        <button type="submit" class="btn-lineBooks w-100">Филтрирай</button>
+<!-- Търсене и филтър по жанр -->
+<form method="get" asp-action="Index" class="toolbar">
+    <div class="row g-2">
+        <div class="col-md-5">
+            <input type="text" name="search" value="@ViewData["CurrentSearch"]" class="form-control" placeholder="Търси по заглавие или автор..." />
+        </div>
+        <div class="col-md-4">
+            <select name="genre" class="form-select" asp-items="ViewBag.Genres">
+                <option value="">-- Всички жанрове --</option>
+            </select>
+        </div>
+        <div class="col-md-3">
+            <button type="submit" class="btn btn-ink w-100">Филтрирай</button>
+        </div>
     </div>
 </form>
 
 @if (!Model.Any())
 {
-    <p class="text-muted">Няма намерени книги.</p>
+    <p class="text-center py-5">Няма намерени книги. Добави първата си и рафтът ти ще оживее.</p>
 }
 else
 {
@@ -37,17 +40,21 @@ else
         @foreach (var item in Model)
         {
             <article class="book-card">
-                <a asp-action="Details" asp-route-id="@item.Id" class="book" aria-label="@item.Title">
-                    <div class="cover empty">@item.Title</div>
-                </a>
+                <div class="stand">
+                    <a asp-action="Details" asp-route-id="@item.Id" class="bk" aria-label="@item.Title">
+                        <div class="bk-cover">@item.Title</div>
+                    </a>
+                </div>
 
-                <h3 class="book-title">@item.Title</h3>
-
-                <div class="book-actions">
-                    <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-sm btn-more">Виж повече</a>
-                    <div class="row-btns">
-                        <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-sm btn-edit">Редактирай</a>
-                        <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-sm btn-remove">Изтрий</a>
+                <div class="book-info">
+                    <h3 class="book-title">@item.Title</h3>
+                    <p class="book-author">@item.Author</p>
+                    <div class="book-actions">
+                        <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-sm btn-more">Виж повече</a>
+                        <div class="row-btns">
+                            <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-sm btn-edit">Редактирай</a>
+                            <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-sm btn-remove">Изтрий</a>
+                        </div>
                     </div>
                 </div>
             </article>

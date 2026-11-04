@@ -4,68 +4,79 @@
     ViewData["Title"] = "Редактиране на книга";
 }
 
-<h2>Редактиране на книга</h2>
-
-<form asp-action="Edit" method="post" enctype="multipart/form-data">
-    <input type="hidden" asp-for="Id" />
-    <input type="hidden" asp-for="PdfPath" />
-
-
-    <div class="mb-3">
-        <label asp-for="Title" class="form-label">Заглавие</label>
-        <input asp-for="Title" class="form-control" required />
+<div class="narrow">
+    <div class="page-head">
+        <h2>Редактиране на книга</h2>
     </div>
 
-    <div class="mb-3">
-        <label asp-for="Author" class="form-label">Автор</label>
-        <input asp-for="Author" class="form-control" required />
-    </div>
+    <form asp-action="Edit" method="post" enctype="multipart/form-data" class="form-card">
+        <input type="hidden" asp-for="Id" />
+        <input type="hidden" asp-for="PdfPath" />
+        <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
 
-    <div class="mb-3">
-        <label asp-for="Genre" class="form-label">Жанр</label>
-        <select asp-for="Genre" class="form-select" asp-items="ViewBag.Genres" required>
-            <option value="">-- Изберете жанр --</option>
-        </select>
-    </div>
-
-    <div class="mb-3">
-        <label asp-for="Year" class="form-label">Година</label>
-        <input asp-for="Year" type="number" class="form-control" />
-    </div>
-
-    <div class="mb-3">
-        <label asp-for="Description" class="form-label">Бележки / Описание</label>
-        <textarea asp-for="Description" class="form-control" rows="3"></textarea>
-    </div>
-
-    <div class="mb-3">
-        <label asp-for="Status" class="form-label">Статус на четене</label>
-        <select asp-for="Status" class="form-select">
-            <option value="Ще чета">Ще чета</option>
-            <option value="В процес">В процес</option>
-            <option value="Прочетена">Прочетена</option>
-        </select>
-    </div>
-
-    <div class="mb-3">
-        <label class="form-label">PDF файл на книгата</label>
-
-        @if (!string.IsNullOrEmpty(Model.PdfPath))
-        {
-            <div class="mb-2">
-                <span class="text-success">✔ Има качен файл:</span>
-                <a href="@Model.PdfPath" target="_blank" class="btn btn-sm btn-outline-danger ms-2">Преглед на текущия PDF</a>
+        <div class="row g-4">
+            <div class="col-md-6">
+                <label asp-for="Title">Заглавие</label>
+                <input asp-for="Title" class="form-control" required />
+                <span asp-validation-for="Title" class="text-danger small"></span>
             </div>
-        }
-        else
-        {
-            <div class="mb-2 text-muted">Няма качен PDF файл в момента.</div>
-        }
+            <div class="col-md-6">
+                <label asp-for="Author">Автор</label>
+                <input asp-for="Author" class="form-control" required />
+                <span asp-validation-for="Author" class="text-danger small"></span>
+            </div>
 
-        <input type="file" name="pdfFile" accept=".pdf" class="form-control" />
-        <div class="form-text">Изберете нов файл само ако желаете да смените текущия.</div>
-    </div>
+            <div class="col-md-6">
+                <label asp-for="Genre">Жанр</label>
+                <select asp-for="Genre" class="form-select" asp-items="ViewBag.Genres" required>
+                    <option value="">-- Изберете жанр --</option>
+                </select>
+            </div>
+            <div class="col-md-6">
+                <label asp-for="Year">Година</label>
+                <input asp-for="Year" type="number" class="form-control" />
+                <span asp-validation-for="Year" class="text-danger small"></span>
+            </div>
 
-    <button type="submit" class="btn btn-success">Запази промените</button>
-    <a asp-action="Index" class="btn btn-secondary">Отказ</a>
-</form>
+            <div class="col-12">
+                <label asp-for="Description">Бележки / Описание</label>
+                <textarea asp-for="Description" class="form-control" rows="4"></textarea>
+            </div>
+
+            <div class="col-md-6">
+                <label asp-for="Status">Статус на четене</label>
+                <select asp-for="Status" class="form-select">
+                    <option value="Ще чета">Ще чета</option>
+                    <option value="В процес">В процес</option>
+                    <option value="Прочетена">Прочетена</option>
+                </select>
+            </div>
+
+            <div class="col-md-6">
+                <label for="pdfFile">PDF файл на книгата</label>
+                @if (!string.IsNullOrEmpty(Model.PdfPath))
+                {
+                    <div class="mb-2 small d-flex align-items-center gap-2">
+                        <span class="text-success">✔ Има качен файл</span>
+                        <a href="@Model.PdfPath" target="_blank" class="btn btn-line btn-sm">Преглед</a>
+                    </div>
+                }
+                else
+                {
+                    <div class="mb-2 small text-muted">Няма качен PDF файл в момента.</div>
+                }
+                <input type="file" id="pdfFile" name="pdfFile" accept=".pdf" class="form-control" />
+                <div class="form-text">Избери нов файл само ако искаш да смениш текущия.</div>
+            </div>
+        </div>
+
+        <div class="form-actions">
+            <button type="submit" class="btn btn-ink">Запази промените</button>
+            <a asp-action="Index" class="btn btn-remove">Отказ</a>
+        </div>
+    </form>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

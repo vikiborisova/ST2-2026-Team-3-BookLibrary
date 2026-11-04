@@ -4,15 +4,19 @@
     ViewData["Title"] = Model.Title;
 }
 
-<link rel="stylesheet" href="~/css/book-cards.css" asp-append-version="true" />
+@section Styles {
+    <link rel="stylesheet" href="~/css/book-cards.css" asp-append-version="true" />
+}
 
 <div class="book-details">
     <div class="row g-4 align-items-start">
 
-        <!-- Книгата -->
-        <div class="col-md-4 d-flex justify-content-center">
-            <div class="book">
-                <div class="cover empty">@Model.Title</div>
+        <!-- Книгата върху рафт -->
+        <div class="col-md-4">
+            <div class="stand">
+                <div class="bk bk-lg">
+                    <div class="bk-cover">@Model.Title</div>
+                </div>
             </div>
         </div>
 
@@ -22,12 +26,6 @@
             <div class="author">@Model.Author</div>
 
             <dl class="info-grid">
-                <dt>Заглавие</dt>
-                <dd>@Model.Title</dd>
-
-                <dt>Автор</dt>
-                <dd>@Model.Author</dd>
-
                 <dt>Жанр</dt>
                 <dd>@Model.Genre</dd>
 
@@ -57,7 +55,7 @@
             <div class="d-flex flex-wrap gap-2">
                 <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-edit">Редактирай</a>
                 <a asp-action="Delete" asp-route-id="@Model.Id" class="btn btn-remove">Изтрий книгата</a>
-                <a asp-action="Index" class="btn btn-outline-secondary">← Към библиотеката</a>
+                <a asp-action="Index" class="btn btn-more">← Към библиотеката</a>
             </div>
         </div>
     </div>
@@ -69,7 +67,7 @@
         @if (!string.IsNullOrEmpty(Model.PdfPath))
         {
             <div class="d-flex flex-wrap gap-2">
-                <a href="@Model.PdfPath" target="_blank" class="btn btn-more">Отвори в нов прозорец</a>
+                <a href="@Model.PdfPath" target="_blank" class="btn btn-more flex-grow-0">Отвори в нов прозорец</a>
 
                 <form asp-action="DeletePdf" asp-route-id="@Model.Id" method="post"
                       onsubmit="return confirm('Сигурен ли си, че искаш да изтриеш PDF файла?');">
@@ -82,7 +80,7 @@
         else
         {
             <p class="text-muted mb-2">Към тази книга няма качен PDF файл.</p>
-            <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-edit">Качи PDF</a>
+            <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-edit flex-grow-0">Качи PDF</a>
         }
     </section>
 </div>

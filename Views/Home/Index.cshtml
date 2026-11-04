@@ -1,5 +1,11 @@
 ﻿@{
     ViewData["Title"] = "Начало";
+    ViewData["FullWidth"] = true;
+    bool loggedIn = Context.Session.GetInt32("UserId") != null;
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/home.css" asp-append-version="true" />
 }
 
 <header class="hero py-4 py-lg-5">
@@ -75,26 +81,33 @@
     </div>
 </section>
 
-<section id="kak" class="dark full-bleed py-5">
+<section id="kak" class="dark py-5">
     <div class="container py-lg-4">
         <h2 class="mb-5 display-6">Три стъпки до подреден рафт</h2>
         <div class="row g-5">
-            <div class="col-md-4"><h3 class="h4">1. Създай профил</h3><p class="muted">Нужни са ти само имейл и парола.</p></div>
+            <div class="col-md-4"><h3 class="h4">1. Създай профил</h3><p class="muted">Нужни са ти само потребителско име и парола.</p></div>
             <div class="col-md-4"><h3 class="h4">2. Качи книга</h3><p class="muted">Избери PDF, добави корица и заглавие. Книгата се появява на рафта ти.</p></div>
             <div class="col-md-4"><h3 class="h4">3. Прелиствай и чети</h3><p class="muted">Плъзни рафта, и избери своята книга от всяко устройство</p></div>
         </div>
     </div>
 </section>
 
-<section class="py-5">
-    <div class="container">
-        <div class="book-cta">
-            <div class="book-cta__text">
-                <h2>Остави книгите си да се подредят.</h2>
-                <a href="/register" class="btn btn-ink">Създай рафт</a>
-            </div>
-        </div>
+<!-- Илюстрация на цяла ширина: книгите се разпростират от двете страни -->
+<section class="cta" aria-label="Създай рафт">
+    <div class="cta-books cta-left" aria-hidden="true"></div>
+    <div class="cta-panel">
+        <h2>Остави книгите си да се подредят.</h2>
+        <p>Започни с една книга. Рафтът ти ще се напълни по-бързо, отколкото мислиш.</p>
+        @if (loggedIn)
+        {
+            <a asp-controller="Books" asp-action="Create" class="btn btn-ink">Добави книга</a>
+        }
+        else
+        {
+            <a asp-controller="Account" asp-action="Login" class="btn btn-ink">Добави книга</a>
+        }
     </div>
+    <div class="cta-books cta-right" aria-hidden="true"></div>
 </section>
 
 @section Scripts {

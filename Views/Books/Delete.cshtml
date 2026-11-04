@@ -4,27 +4,34 @@
     ViewData["Title"] = "Изтриване на книга";
 }
 
-<h2 class="text-danger">Изтриване на книга</h2>
-<h3>Сигурни ли сте, че искате да изтриете това заглавие от вашия рафт?</h3>
+<div class="narrow">
+    <div class="page-head">
+        <h2 style="color:var(--plum)">Изтриване на книга</h2>
+    </div>
 
-<div class="card p-4 mt-3 mb-3">
-    <dl class="row">
-        <dt class="col-sm-3">Заглавие:</dt>
-        <dd class="col-sm-9"><strong>@Model.Title</strong></dd>
+    <div class="form-card">
+        <p class="lead mb-4">Сигурни ли сте, че искате да изтриете това заглавие от вашия рафт?</p>
 
-        <dt class="col-sm-3">Автор:</dt>
-        <dd class="col-sm-9">@Model.Author</dd>
+        <dl class="row g-3 mb-0">
+            <dt class="col-sm-3">Заглавие</dt>
+            <dd class="col-sm-9 mb-0"><strong>@Model.Title</strong></dd>
 
-        <dt class="col-sm-3">Жанр:</dt>
-        <dd class="col-sm-9">@Model.Genre</dd>
+            <dt class="col-sm-3">Автор</dt>
+            <dd class="col-sm-9 mb-0">@Model.Author</dd>
 
-        <dt class="col-sm-3">Година:</dt>
-        <dd class="col-sm-9">@Model.Year</dd>
-    </dl>
+            <dt class="col-sm-3">Жанр</dt>
+            <dd class="col-sm-9 mb-0">@Model.Genre</dd>
+
+            <dt class="col-sm-3">Година</dt>
+            <dd class="col-sm-9 mb-0">@Model.Year</dd>
+        </dl>
+
+        <form asp-action="Delete" method="post">
+            <input type="hidden" asp-for="Id" />
+            <div class="form-actions">
+                <button type="submit" class="btn btn-remove">Да, изтрий</button>
+                <a asp-action="Index" class="btn btn-more">Отказ</a>
+            </div>
+        </form>
+    </div>
 </div>
-
-<form asp-action="Delete" method="post">
-    <input type="hidden" asp-for="Id" />
-    <button type="submit" class="btn btn-danger">Да, изтрий</button>
-    <a asp-action="Index" class="btn btn-secondary">Отказ</a>
-</form>
