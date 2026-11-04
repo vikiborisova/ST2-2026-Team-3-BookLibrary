@@ -4,43 +4,64 @@
     ViewData["Title"] = "Добавяне на книга";
 }
 
-<h2>Добавяне на нова книга</h2>
+<div class="narrow">
+    <div class="page-head justify-content-center">
+        <h2 class="form-card-title">Добавяне на нова книга</h2>
+    </div>
 
-<form asp-action="Create" method="post" enctype="multipart/form-data">
-    <div class="form-group mb-3">
-        <label asp-for="Title" class="control-label">Заглавие</label>
-        <input asp-for="Title" class="form-control" required />
-    </div>
-    <div class="form-group mb-3">
-        <label asp-for="Author" class="control-label">Автор</label>
-        <input asp-for="Author" class="form-control" required />
-    </div>
-    <div class="mb-3">
-        <label asp-for="Genre" class="form-label">Жанр</label>
-        <select asp-for="Genre" class="form-select" asp-items="ViewBag.Genres" required>
-            <option value="">-- Изберете жанр --</option>
-        </select>
-    </div>
-    <div class="form-group mb-3">
-        <label asp-for="Year" class="control-label">Година на издаване</label>
-        <input asp-for="Year" type="number" class="form-control" />
-    </div>
-    <div class="form-group mb-3">
-        <label asp-for="Description" class="control-label">Описание</label>
-        <textarea asp-for="Description" class="form-control" rows="3"></textarea>
-    </div>
-    <div class="mb-3">
-        <label asp-for="Status" class="form-label">Статус на четене</label>
-        <select asp-for="Status" class="form-select">
-            <option value="Ще чета">Ще чета</option>
-            <option value="В процес">В процес</option>
-            <option value="Прочетена">Прочетена</option>
-        </select>
-    </div>
-    <div class="mb-3">
-        <label class="form-label">Прикачи PDF файл</label>
-        <input type="file" name="pdfFile" accept=".pdf" class="form-control" />
-    </div>
-    <button type="submit" class="btn btn-success">Запази</button>
-    <a asp-action="Index" class="btn btn-secondary">Отказ</a>
-</form>
+    <form asp-action="Create" method="post" enctype="multipart/form-data" class="form-card">
+        <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+        <div class="row g-4">
+            <div class="col-md-6">
+                <label asp-for="Title">Заглавие</label>
+                <input asp-for="Title" class="form-control" required />
+                <span asp-validation-for="Title" class="text-danger small"></span>
+            </div>
+            <div class="col-md-6">
+                <label asp-for="Author">Автор</label>
+                <input asp-for="Author" class="form-control" required />
+                <span asp-validation-for="Author" class="text-danger small"></span>
+            </div>
+
+            <div class="col-md-6">
+                <label asp-for="Genre">Жанр</label>
+                <select asp-for="Genre" class="form-select" asp-items="ViewBag.Genres" required>
+                    <option value="">-- Изберете жанр --</option>
+                </select>
+            </div>
+            <div class="col-md-6">
+                <label asp-for="Year">Година на издаване</label>
+                <input asp-for="Year" type="number" class="form-control" />
+                <span asp-validation-for="Year" class="text-danger small"></span>
+            </div>
+
+            <div class="col-12">
+                <label asp-for="Description">Описание</label>
+                <textarea asp-for="Description" class="form-control" rows="4"></textarea>
+            </div>
+
+            <div class="col-md-6">
+                <label asp-for="Status">Статус на четене</label>
+                <select asp-for="Status" class="form-select">
+                    <option value="Ще чета">Ще чета</option>
+                    <option value="В процес">В процес</option>
+                    <option value="Прочетена">Прочетена</option>
+                </select>
+            </div>
+            <div class="col-md-6">
+                <label for="pdfFile">Прикачи PDF файл</label>
+                <input type="file" id="pdfFile" name="pdfFile" accept=".pdf" class="form-control" />
+            </div>
+        </div>
+
+        <div class="form-actions">
+            <button type="submit" class="btn btn-ink">Запази</button>
+            <a asp-action="Index" class="btn btn-remove">Отказ</a>
+        </div>
+    </form>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

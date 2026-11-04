@@ -84,3 +84,19 @@
     background: transparent;
     padding-left: 0;
 }
+
+    /* autofill: keep the same look as the empty field */
+    .form-control-underline:-webkit-autofill,
+    .form-control-underline:-webkit-autofill:hover,
+    .form-control-underline:-webkit-autofill:focus {
+        -webkit-text-fill-color: var(--purple);
+        -webkit-box-shadow: 0 0 0 1000px var(--apricot) inset;
+        caret-color: var(--purple);
+        transition: background-color 9999s ease-out;
+    }
+
+    .form-control-underline:focus {
+        background: transparent;
+        box-shadow: none;
+        border-bottom-color: var(--purple);
+    }

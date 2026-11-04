@@ -1,18 +1,33 @@
-﻿<!DOCTYPE html>
+﻿@{
+    var ctrl = ViewContext.RouteData.Values["controller"]?.ToString();
+    var act = ViewContext.RouteData.Values["action"]?.ToString();
+    bool loggedIn = Context.Session.GetInt32("UserId") != null;
+    string user = Context.Session.GetString("Username") ?? "";
+    string initial = user.Length > 0 ? user.Substring(0, 1).ToUpper() : "";
+
+    bool onHome = ctrl == "Home" && act == "Index";
+    bool onCreate = ctrl == "Books" && act == "Create";
+    bool onLibrary = ctrl == "Books" && act != "Create";
+}
+<!DOCTYPE html>
 <html lang="bg">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"] - BookLibrary</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/nav.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/footer.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/BookLibrary.styles.css" asp-append-version="true" />
     @await RenderSectionAsync("Styles", required: false)
-    <link rel="stylesheet" href="~/BookLibrary.styles.css" asp-append-version="true" />
 </head>
 <body>
-    <header>
-        <nav class="navbar navbar-expand-md py-1">
+    <header class="site-header">
+        <nav class="navbar navbar-expand-md">
             <div class="container">
                 <a class="navbar-brand" asp-controller="Home" asp-action="Index">
                     <img src="~/images/logo.png" alt="Shelfio">
@@ -22,20 +37,26 @@
                         aria-controls="nav" aria-expanded="false" aria-label="Меню">
                     <span class="navbar-toggler-icon"></span>
                 </button>
-                <div class="collapse navbar-collapse" id="nav">
-                    <ul class="navbar-nav ms-auto align-items-md-center gap-md-3">
-                        <li class="nav-item"><a class="nav-link" asp-controller="Home" asp-action="Index">Начална страница</a></li>
-                        <li class="nav-item"><a class="nav-link" asp-controller="Books" asp-action="Index">Добави книга</a></li>
-                    </ul>
 
-                    <ul class="navbar-nav align-items-md-center gap-md-3 ms-md-3">
-                        @if (Context.Session.GetInt32("UserId") != null)
+                <div class="collapse navbar-collapse" id="nav">
+                    <ul class="navbar-nav ms-auto align-items-md-center">
+                        <li class="nav-item">
+                            <a class="nav-link @(onHome ? "active" : "")" asp-controller="Home" asp-action="Index">Начална страница</a>
+                        </li>
+                        @if (loggedIn)
                         {
                             <li class="nav-item">
-                                <span class="navbar-text">Здравейте, <strong>@Context.Session.GetString("Username")</strong>!</span>
+                                <a class="nav-link @(onLibrary ? "active" : "")" asp-controller="Books" asp-action="Index">Моята библиотека</a>
                             </li>
                             <li class="nav-item">
-                                <a class="btn btn-outline-danger btn-sm" asp-controller="Account" asp-action="Logout">Изход</a>
+                                <a class="nav-link @(onCreate ? "active" : "")" asp-controller="Books" asp-action="Create">Добави книга</a>
+                            </li>
+                            <li class="nav-item nav-user">
+                                <span class="avatar" aria-hidden="true">@initial</span>
+                                <span>@user</span>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" asp-controller="Account" asp-action="Logout">Изход</a>
                             </li>
                         }
                         else
@@ -50,14 +71,23 @@
         </nav>
     </header>
 
-    <div class="container">
-        <main role="main" class="pb-3">
+    @if (ViewData["FullWidth"] is true)
+    {
+        <main role="main">
             @RenderBody()
         </main>
-    </div>
+    }
+    else
+    {
+        <div class="container">
+            <main role="main" class="page">
+                @RenderBody()
+            </main>
+        </div>
+    }
 
     <footer class="py-4">
-        <div class="container d-flex flex-wrap justify-content-between align-items-center gap-2 small">
+        <div class="container d-flex flex-column flex-md-row justify-content-between align-items-center gap-3 small">
             <a asp-controller="Home" asp-action="Index" class="footer-brand">
                 <img src="~/images/logo.png" alt="Shelfio">
             </a>

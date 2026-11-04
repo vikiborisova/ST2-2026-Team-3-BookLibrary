@@ -1,22 +1,4 @@
-
-@media (min-width: 768px) {
-  html {
-    font-size: 16px;
-  }
-}
-
-.btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
-  box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
-}
-
-html {
-    font-size: 14px;
-    position: relative;
-    min-height: 100%;
-    height: 100%;
-}
-
-
+/* ===== Base ===== */
 :root {
     --purple: #472950;
     --lilac: #DDC3E0;
@@ -25,409 +7,166 @@ html {
     --plum: #78201B;
 }
 
+html {
+    font-size: 15px;
+    height: 100%;
+}
+
+@media (min-width: 768px) {
+    html {
+        font-size: 16px;
+    }
+}
+
 body {
-    font-family: Montserrat,system-ui,sans-serif;
+    font-family: Montserrat, system-ui, sans-serif;
+    font-feature-settings: "locl" 0;
     color: var(--purple);
     background: var(--apricot);
     display: flex;
     flex-direction: column;
     min-height: 100vh;
-    height: 100%;
+    overflow-x: hidden;
 }
 
 h1, h2, h3, .brand {
-    font-family: Georgia,'Times New Roman',serif;
+    font-family: Georgia, 'Times New Roman', serif;
 }
 
-.navbar {
-    background: var(--lilac);
-    margin-bottom: 25px;
+.page {
+    padding: 48px 12px 96px;
 }
 
-.navbar-brand img {
-    height: 36px;
-}
-
-.nav-link {
-    color: var(--purple);
-    font-weight:600
-}
-
-.btn-ink {
-    background: var(--purple);
-    color: var(--apricot);
-    border-radius: 0;
-    padding: .75rem 1.5rem;
-    border: 2px solid var(--purple);
-    border-radius: 4px;
-}
-
-    .btn-ink:hover {
-        background: var(--apricot);
-        border-color: var(--purple);
-        color: var(--purple);
-        border-radius: 4px;
-    }
-
-.btn-inkBooks {
-    background: var(--purple);
-    color: var(--apricot);
-    border-radius: 0;
-    padding: 6px;
-    border: 2px solid var(--purple);
-    border-radius: 4px;
-}
-
-    .btn-inkBooks:hover {
-        background: var(--apricot);
-        border-color: var(--purple);
-        color: var(--purple);
-        border-radius: 4px;
-    }
-
-.btn-line {
-    border: 2px solid var(--purple);
-    border-radius: 0;
-    padding: .7rem 1.5rem;
-    color: var(--purple);
-    border-radius: 4px;
-}
-
-.btn-lineBooks {
-    border: 2px solid var(--purple);
-    border-radius: 0;
-    padding: 4.5px;
-    color: var(--purple);
-    border-radius: 4px;
-}
-
-    .btn-line:hover {
-        background: var(--purple);
-        color: var(--apricot);
-        border-radius: 4px;
-    }
-
-.btn-lineBooks:hover {
-    background: var(--purple);
-    color: var(--apricot);
-    border-radius: 4px;
-}
-
-.navbar-brand img {
-    height: 80px;
-    width: auto;
-}
-
-.hero h1 {
-    font-size: clamp(2.6rem,6vw,4.8rem);
-    line-height: 1;
-    font-weight: 600;
-}
-
-/* shelf animation */
-.shelf {
-    background: var(--lilac);
-    padding: 1.5rem 0 0;
-    position: relative;
-    overflow: hidden;
-    user-select: none;
-    touch-action: pan-y;
-    cursor: grab;
-}
-
-    .shelf.dragging {
-        cursor: grabbing;
-    }
-
-.books {
-    position: relative;
-    height: 330px;
-    perspective: 1200px;
-    border-bottom: 8px solid var(--purple);
-}
-
-.book {
-    position: absolute;
-    left: 0;
-    bottom: 0;
-    transform-style: preserve-3d;
-}
-
-    .book .spine, .book .cover {
-        position: absolute;
-        top: 0;
-        left: 0;
-        height: 100%;
-        backface-visibility: hidden;
-    }
-
-    .book .spine {
-        width: 100%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font: 600 .78rem/1 Montserrat,sans-serif;
-        letter-spacing: .06em;
-        writing-mode: vertical-rl;
-        white-space: nowrap;
-        overflow: hidden;
-    }
-
-    .book .cover {
-        width: var(--cover-w);
-        transform-origin: left center;
-        display: flex;
-        flex-direction: column;
-        justify-content: space-between;
-        padding: 1.2rem 1rem;
-        box-shadow: 0 10px 28px rgba(71,41,80,.4);
-    }
-
-.cover .ct {
-    font: 600 1.35rem/1.1 Georgia,'Times New Roman',serif;
-}
-
-.cover .ca {
-    font-size: .8rem;
-    opacity: .85;
-}
-
-.shelf-caption {
-    background: var(--purple);
-    color: var(--apricot);
-    padding: .9rem 1.1rem;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    gap: 1rem;
-}
-
-    .shelf-caption .t {
-        font: 600 1.05rem Georgia,'Times New Roman',serif;
-    }
-
-    .shelf-caption .a {
-        font-size: .85rem;
-        color: var(--lilac);
-    }
-
-    .shelf-caption .btn {
-        background: var(--satin);
-        color: var(--purple);
-        border-radius: 0;
-        font-weight: 600;
-        white-space: nowrap;
-    }
-
-        .shelf-caption .btn:hover {
-            background: var(--apricot);
-        }
-
-.arrows button {
-    background: transparent;
-    border: 2px solid var(--purple);
-    color: var(--purple);
-    width: 44px;
-    height: 44px;
-}
-
-    .arrows button:hover {
-        background: var(--purple);
-        color: var(--apricot);
-    }
-
-.feature {
-    border-left: 4px solid var(--c);
-    padding-left: 1.1rem;
-}
-
-    .feature h3 {
-        font-size: 1.35rem;
-    }
-
-.dark {
-    background: var(--purple);
-    color: var(--apricot);
-}
-
-    .dark .muted {
-        color: var(--lilac);
-    }
-
-/* ---------- CTA с илюстрация ---------- */
-.book-cta {
-    max-width: 1200px;
+.narrow {
+    max-width: 860px;
     margin: 0 auto;
-    min-height: 440px;
-    padding: 2rem 1rem;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: var(--lilac) url('/images/BookIllustration.svg') center/cover no-repeat;
-    container-type: inline-size;
 }
-
-.book-cta__text {
-    background: var(--apricot);
-    padding: 2rem 1.5rem;
-    max-width: 420px;
-    text-align: center;
-}
-
-    .book-cta__text h2 {
-        font-size: 1.9rem;
-        line-height: 1.1;
-        margin-bottom: .75rem;
-    }
-
-    .book-cta__text p {
-        margin-bottom: 1.25rem;
-    }
-
-.full-bleed {
-    width: 100vw;
-    position: relative;
-    left: 50%;
-    margin-left: -50vw;
-}
-
-@media (min-width: 992px) {
-    /* illustration */
-    .book-cta {
-        aspect-ratio: 16/9;
-        min-height: 0;
-        padding: 0;
-        display: block;
-        position: relative;
-        background-size: 100% 100%;
-    }
-
-    .book-cta__text {
-        position: absolute;
-        left: 35.85%;
-        top: 39%;
-        width: 28.3%;
-        height: 53%;
-        background: none;
-        border: 0;
-        padding: 0;
-        max-width: none;
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        align-items: center;
-    }
-
-        .book-cta__text h2 {
-            font-size: 2.6cqw;
-            margin-bottom: 1.2cqw;
-        }
-
-        .book-cta__text p {
-            font-size: 1.25cqw;
-            margin-bottom: 1.6cqw;
-        }
-
-        .book-cta__text .btn {
-            font-size: 1.2cqw;
-            padding: .7cqw 1.6cqw;
-        }
-}
-
-.full-bleed {
-    width: 100vw;
-    position: relative;
-    left: 50%;
-    margin-left: -50vw;
-}
-
-footer {
-    background: var(--lilac);
-    color: var(--purple);
-    margin-top: auto;
-}
-
-    footer a {
-        color: inherit;
-    }
 
 :focus-visible {
-    outline: 3px solid var(--apricot);
+    outline: 3px solid var(--satin);
     outline-offset: 2px;
 }
 
-.footer-brand img {
-    height: 50px;
-    width: auto;
+.btn:focus, .btn:active:focus, .form-control:focus, .form-select:focus {
+    box-shadow: 0 0 0 .2rem rgba(71, 41, 80, .25);
+    border-color: var(--purple);
 }
 
-.navbar-toggler {
-    border: 2px solid var(--purple);
-    border-radius: 4px;
-}
-
-    .navbar-toggler:focus {
-        box-shadow: 0 0 0 3px var(--apricot);
-    }
-
-.navbar-toggler-icon {
-    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3e%3cpath stroke='%23472950' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e");
-}
-
-@media (max-width: 767.98px) {
-    .navbar-collapse {
-        padding: 12px 0;
-    }
-
-    .navbar-nav .nav-link {
-        padding: 10px 0;
-    }
-}
-
-/* ---------- AI препоръки в каросела ---------- */
-.shelf-caption .label {
-    font-size: .7rem;
-    letter-spacing: .08em;
-    text-transform: uppercase;
-    color: var(--satin);
-    margin-bottom: .15rem;
-}
-
-.arrows .rec-more {
-    width: auto;
-    padding: 0 1.1rem;
+/* ===== Buttons ===== */
+.btn-ink, .btn-line, .btn-edit, .btn-more, .btn-remove {
+    display: inline-block;
     font-weight: 600;
-    margin-left: .5rem;
+    text-align: center;
+    text-decoration: none;
+    background: var(--purple);
+    color: var(--apricot);
+    border: 2px solid var(--purple);
+    border-radius: 8px;
+    padding: .65rem 1.4rem;
+    transition: background .2s, color .2s, border-color .2s;
 }
 
-    .arrows .rec-more:disabled {
-        opacity: .45;
-        cursor: not-allowed;
+    .btn-ink:hover, .btn-line:hover, .btn-edit:hover {
+        background: var(--apricot);
+        color: var(--purple);
     }
 
-        .arrows .rec-more:disabled:hover {
-            background: transparent;
-            color: var(--purple);
-        }
-
-.rec-info {
+/* light purple */
+.btn-more {
     background: var(--lilac);
-    border-left: 6px solid var(--purple);
-    padding: 1rem 1.25rem;
-    margin-top: 1rem;
+    border-color: var(--lilac);
+    color: var(--purple);
 }
 
-    .rec-info h3 {
-        font-size: 1.25rem;
+    .btn-more:hover {
+        background: var(--apricot);
+        border-color: var(--purple);
+        color: var(--purple);
+    }
+
+/* red */
+.btn-remove {
+    background: var(--plum);
+    border-color: var(--plum);
+    color: #fff;
+}
+
+    .btn-remove:hover {
+        background: var(--apricot);
+        color: var(--plum);
+    }
+
+.btn-sm.btn-ink, .btn-sm.btn-line {
+    padding: .35rem .95rem;
+}
+
+/* ===== Page title ===== */
+.page-head {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 2rem;
+}
+
+    .page-head h2 {
         margin: 0;
     }
 
-    .rec-info .rec-author {
-        font-size: .85rem;
-        opacity: .8;
-        margin-bottom: .5rem;
-    }
+/* ===== Forms ===== */
 
-    .rec-info p:last-child {
-        margin: 0;
+.form-card-title {
+    text-align: center;
+    font-weight: 700;
+}
+
+.form-card {
+    background: #fff;
+    border: 2px solid var(--lilac);
+    border-radius: 16px;
+    padding: 1.5rem;
+    box-shadow: 0 8px 24px rgba(71, 41, 80, .08);
+
+
+@media (min-width: 768px) {
+    .form-card {
+        padding: 2.5rem;
     }
+}
+
+.form-card label {
+    display: block;
+    font-weight: 700;
+    margin-bottom: .5rem;
+}
+
+.form-control, .form-select {
+    border: 2px solid var(--lilac);
+    border-radius: 8px;
+    padding: .65rem .85rem;
+}
+
+.form-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: .75rem;
+    margin-top: 2.5rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--lilac);
+}
+
+/* search and filter bar */
+.toolbar {
+    background: #fff;
+    border: 2px solid var(--lilac);
+    border-radius: 14px;
+    padding: 14px;
+    margin-bottom: 3.5rem;
+}
+
+.book-actions .btn.btn-sm {
+    border-radius: 8px;
+}
+
+/* END site.css */
