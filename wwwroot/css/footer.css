@@ -2,9 +2,10 @@
 footer {
     background: var(--lilac);
     color: var(--purple);
-    margin-top: auto;
+    margin-top: auto; /*държи го най-долу*/
 }
 
+    /* Връзки в цвета на footer-а, без подчертаване */
     footer a {
         color: inherit;
         text-decoration: none;
@@ -14,12 +15,14 @@ footer {
             color: var(--plum);
         }
 
+/* Лого с фиксирана височина */
 .footer-brand img {
     height: 50px;
     width: auto;
     max-width: 100%;
 }
 
+/* Връзките на един ред */
 .footer-links {
     display: flex;
     gap: 1.5rem;

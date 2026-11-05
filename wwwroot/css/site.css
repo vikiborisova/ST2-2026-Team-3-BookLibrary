@@ -1,4 +1,6 @@
+﻿
 /* ===== Base ===== */
+/* Цветовете на сайта*/
 :root {
     --purple: #472950;
     --lilac: #DDC3E0;
@@ -7,11 +9,13 @@
     --plum: #78201B;
 }
 
+/* Основен размер на текста: 15px на телефон */
 html {
     font-size: 15px;
     height: 100%;
 }
 
+/* ...и 16px на по-големи екрани */
 @media (min-width: 768px) {
     html {
         font-size: 16px;
@@ -33,20 +37,24 @@ h1, h2, h3, .brand {
     font-family: Georgia, 'Times New Roman', serif;
 }
 
+/* Основно съдържание със space отгоре и отдолу */
 .page {
     padding: 48px 12px 96px;
 }
 
+/* Тясна центрирана колона (за форми) */
 .narrow {
     max-width: 860px;
     margin: 0 auto;
 }
 
+/* Розов контур при навигация с клавиатура */
 :focus-visible {
     outline: 3px solid var(--satin);
     outline-offset: 2px;
 }
 
+/* Лилав ореол върху бутони и полета при фокус */
 .btn:focus, .btn:active:focus, .form-control:focus, .form-select:focus {
     box-shadow: 0 0 0 .2rem rgba(71, 41, 80, .25);
     border-color: var(--purple);
@@ -128,14 +136,14 @@ h1, h2, h3, .brand {
     padding: 1.5rem;
     box-shadow: 0 8px 24px rgba(71, 41, 80, .08);
 
-
-@media (min-width: 768px) {
-    .form-card {
-        padding: 2.5rem;
+    /* На голям екран картата има повече отстъп */
+    @media (min-width: 768px) {
+        .form-card {
+            padding: 2.5rem;
+        }
     }
-}
 
-.form-card label {
+    .form-card label {
     display: block;
     font-weight: 700;
     margin-bottom: .5rem;
@@ -147,6 +155,7 @@ h1, h2, h3, .brand {
     padding: .65rem .85rem;
 }
 
+/* Бутоните на формата (Запази, Отказ), отделени с линия отгоре */
 .form-actions {
     display: flex;
     flex-wrap: wrap;

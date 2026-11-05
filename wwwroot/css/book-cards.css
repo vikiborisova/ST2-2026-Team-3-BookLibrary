@@ -1,4 +1,5 @@
 ﻿/* ===== Заглавие и лента с филтри ===== */
+/* Ред със заглавието и бутона; на тесен екран слиза на нов ред */
 .page-head {
     display: flex;
     flex-wrap: wrap;
@@ -12,6 +13,7 @@
         margin: 0;
     }
 
+/* Кутия около търсенето, жанра и бутона */
 .toolbar {
     padding: 16px;
     margin-bottom: 40px;
@@ -20,6 +22,7 @@
     border-radius: 14px;
 }
 
+    /* Полета с еднаква височина и лилава рамка */
     .toolbar .form-control,
     .toolbar .form-select {
         height: 48px;
@@ -34,6 +37,7 @@
             opacity: .6;
         }
 
+        /* При фокус: лилава рамка без синия ореол на Bootstrap */
         .toolbar .form-control:focus,
         .toolbar .form-select:focus {
             border-color: var(--purple);
@@ -57,6 +61,7 @@
 }
 
 /* ===== Grid ===== */
+/* Колони автоматично*/
 .book-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
@@ -64,6 +69,7 @@
     padding-top: 8px;
 }
 
+/* Една карта: книга отгоре, информация отдолу */
 .book-card {
     min-width: 0;
     display: flex;
@@ -71,6 +77,7 @@
     align-items: center;
 }
 
+/* Центрира книгата */
 .stand {
     display: flex;
     justify-content: center;
@@ -78,6 +85,7 @@
 }
 
 /* ===== Book ===== */
+/* Гърбът на книгата; цветът и размерът се менят през променливите */
 .bk {
     --color: var(--purple);
     --text: #fff;
@@ -95,11 +103,12 @@
     transition: transform .2s ease;
     text-decoration: none;
 }
-
+    /* При посочване книгата се повдига */
     .bk:hover {
         transform: translateY(-4px);
     }
 
+/* Корицата със заглавието */
 .bk-cover {
     position: absolute;
     top: 0;
@@ -116,7 +125,7 @@
     background: var(--tint);
     border-radius: 6px 6px 0 0;
     overflow: hidden;
-    word-break: break-word;
+    word-break: break-word; /* дълги думи се чупят, не излизат от корицата */
 }
 
 /* pages */
@@ -132,6 +141,7 @@
     box-shadow: inset 0 0 0 3px var(--lilac);
 }
 /* ribbon */
+/* Лентичката за отметка*/
 .bk::after {
     content: "";
     position: absolute;
@@ -142,7 +152,7 @@
     background: var(--ribbon);
     clip-path: polygon(0 0, 100% 0, 100% 100%, 50% 80%, 0 100%);
 }
-
+/*повтаряне на цветовете на всеки 4 книги */
 .book-card:nth-child(4n+1) .bk {
     --color: var(--purple);
     --text: #fff;
@@ -170,6 +180,8 @@
 }
 
 /* ===== Title and buttons ===== */
+/* Блокът под книгата. padding-top оставя място за лентичката,
+   която излиза извън книгата. */
 .book-info {
     width: 100%;
     max-width: 190px;
@@ -179,6 +191,8 @@
     padding-top: 34px;
 }
 
+/* Заглавието: фиксирана височина за 2 реда (2.5em), за да са всички карти
+   еднакви. По-дълго заглавие се реже с "..." след втория ред. */
 .book-title {
     font-size: 1.05rem;
     font-weight: 700;
@@ -192,6 +206,7 @@
     overflow: hidden;
 }
 
+/* Авторът: на един ред, по-блед. Ако е дълъг, свършва с "..." */
 .book-author {
     max-width: 100%;
     margin: 0 0 14px;
@@ -203,18 +218,19 @@
     text-overflow: ellipsis;
 }
 
+/* Бутоните са един под друг: "Виж повече", а под него два до два */
 .book-actions {
     display: flex;
     flex-direction: column;
     gap: 6px;
     width: 100%;
 }
-
+    /* Редът с "Редактирай" и "Изтрий" един до друг */
     .book-actions .row-btns {
         display: flex;
         gap: 6px;
     }
-
+    /* Бутоните делят мястото поравно (flex: 1) */
     .book-actions .btn {
         flex: 1;
         min-width: 0;
@@ -225,11 +241,12 @@
 
 /* ===== Phone: 2 equal columns ===== */
 @media (max-width: 575.98px) {
+    /* Точно 2 колони вместо автоматични */
     .book-grid {
         grid-template-columns: repeat(2, minmax(0, 1fr));
         gap: 28px 12px;
     }
-
+    /* По-малка книга: сменяме само променливите */
     .bk {
         --w: 132px;
         --h: 180px;
@@ -248,21 +265,25 @@
         max-width: 100%;
     }
 
+    /* "Редактирай" и "Изтрий" един под друг, защото няма място един до друг */
     .book-actions .row-btns {
         flex-direction: column;
     }
 
+    /* Текстът на бутоните може да се пренася на втори ред */
     .book-actions .btn {
         white-space: normal;
         font-size: .75rem;
     }
 }
 /* ===== Details page ===== */
+/* По-голяма книга от тази в списъка (променяме само размерите) */
 .bk-lg {
     --w: 210px;
     --h: 285px;
 }
 
+/* Цялата страница е центрирана и не по-широка от 1000px */
 .book-details {
     max-width: 1000px;
     margin: 0 auto;
@@ -272,11 +293,15 @@
         font-weight: 800;
     }
 
+    /* Името на автора под заглавието */
     .book-details .author {
         color: var(--plum);
         font-size: 1.2rem;
     }
 
+/* Таблица с данни: ляв стълб с етикетите (Жанр, Година...),
+   десен стълб със стойностите. max-content прави левия стълб
+   толкова широк, колкото е най-дългият етикет. */
 .info-grid {
     display: grid;
     grid-template-columns: max-content 1fr;
@@ -284,17 +309,19 @@
     margin: 20px 0;
 }
 
+    /* dt е етикетът */
     .info-grid dt {
         font-weight: 800;
     }
 
+    /* dd е стойността */
     .info-grid dd {
         margin: 0;
     }
 
 .description {
-    white-space: pre-line;
-    max-width: 70ch;
+    white-space: pre-line; /*пази новите редове от текста*/
+    max-width: 70ch; /* държи реда на разумна дължина за четене.*/
     line-height: 1.6;
 }
 
@@ -311,6 +338,7 @@
         margin-bottom: 14px;
     }
 
+    /* Вграденият преглед на PDF-а */
     .pdf-box iframe {
         width: 100%;
         height: 600px;
@@ -319,6 +347,7 @@
         margin-top: 16px;
     }
 
+/* Телефон: данните са едно под друго, а PDF прегледът е по-нисък */
 @media (max-width: 575.98px) {
     .info-grid {
         grid-template-columns: 1fr;
@@ -334,6 +363,8 @@
     }
 }
 
+/* Ако потребителят е изключил анимациите в системата си,
+   не повдигаме книгата при hover */
 @media (prefers-reduced-motion: reduce) {
     .bk {
         transition: none;
