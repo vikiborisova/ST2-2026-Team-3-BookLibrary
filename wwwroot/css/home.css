@@ -6,6 +6,7 @@
 }
 
 /* ===== Carousel ===== */
+/*Рафтът с книги*/
 .shelf {
     background: var(--lilac);
     padding: 1.5rem 0 0;
@@ -23,7 +24,7 @@
 .books {
     position: relative;
     height: 330px;
-    perspective: 1200px;
+    perspective: 1200px; /*дава 3D ефект*/
     border-bottom: 8px solid var(--purple);
 }
 
@@ -34,6 +35,7 @@
     transform-style: preserve-3d;
 }
 
+    /* Гърбът и корицата лежат една върху друга и се скриват при обръщане */
     .book .spine, .book .cover {
         position: absolute;
         top: 0;
@@ -64,11 +66,13 @@
         box-shadow: 0 10px 28px rgba(71, 41, 80, .4);
     }
 
+    /* Текстът не излиза извън корицата */
     .book .cover {
         overflow: hidden;
         box-sizing: border-box;
     }
 
+/* Заглавие на корицата; дългите думи се чупят */
 .cover .ct {
     font: 600 1.35rem/1.1 Georgia, 'Times New Roman', serif;
     max-width: 100%;
@@ -76,6 +80,7 @@
     hyphens: auto;
 }
 
+/* Автор на корицата */
 .cover .ca {
     font-size: .8rem;
     opacity: .85;
@@ -83,6 +88,7 @@
     overflow-wrap: anywhere;
 }
 
+/* Телефон: по-малки отстъпи и текст */
 @media (max-width: 575.98px) {
     .book .cover {
         padding: 1rem .75rem;
@@ -124,6 +130,7 @@
         margin-bottom: .15rem;
     }
 
+/* Бутоните със стрелки: контур, който се запълва при посочване */
 .arrows button {
     background: transparent;
     border: 2px solid var(--purple);
@@ -154,6 +161,7 @@
             color: var(--purple);
         }
 
+/* Кутия с подробности за препоръчана книга */
 .rec-info {
     background: var(--lilac);
     border-left: 6px solid var(--purple);
@@ -246,6 +254,7 @@
         margin: 0 auto 1.5rem;
     }
 
+/* Таблет и телефон: всичко е една колона */
 @media (max-width: 767.98px) {
     .cta {
         flex-direction: column;
@@ -255,6 +264,7 @@
         margin-bottom: 3rem;
     }
 
+    /* Книгите стават лента над панела */
     .cta-left {
         flex: none;
         height: 170px;
@@ -262,11 +272,12 @@
         background-position: center bottom;
         border-bottom: 14px solid var(--purple);
     }
-
+    /* Втората лента се скрива */
     .cta-right {
         display: none;
     }
 
+    /* Панелът е на цяла ширина, без рамка */
     .cta-panel {
         width: 100%;
         border: 0;

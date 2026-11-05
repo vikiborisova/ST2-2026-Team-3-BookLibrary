@@ -1,8 +1,10 @@
-﻿/* ===== Header ===== */
+﻿
+/* ===== Header ===== */
+/* Хедърът остава горе при скролиране*/
 .site-header {
     position: sticky;
     top: 0;
-    z-index: 1030;
+    z-index: 1030; /*държи над съдържанието*/
 }
 
 .navbar {
@@ -10,12 +12,13 @@
     padding: .4rem 0;
     box-shadow: 0 2px 10px rgba(71, 41, 80, .12);
 }
-
+/* Логото: 60px на телефон */
 .navbar-brand img {
     height: 60px;
     width: auto;
 }
 
+/* Връзките в менюто */
 @media (min-width: 768px) {
     .navbar-brand img {
         height: 74px;
@@ -38,7 +41,7 @@
         text-decoration-thickness: 2px;
         text-underline-offset: 8px;
     }
-
+/* Блок с потребителя*/
 .nav-user {
     display: flex;
     align-items: center;

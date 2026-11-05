@@ -1,5 +1,6 @@
 ﻿namespace BookLibrary.Models
 {
+    // Модел: описва една книга. Всяко свойство е колона в таблицата в базата.
     public class Book
     {
         public int Id { get; set; }

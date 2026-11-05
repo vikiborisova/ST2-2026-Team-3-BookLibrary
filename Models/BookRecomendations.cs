@@ -1,5 +1,7 @@
 ﻿namespace BookLibrary.Models
 {
+    // Модел за една препоръчана книга (от AI). Не се записва в базата,
+    // ползва се само за показване в карусела на началната страница.
     public class BookRecommendation
     {
         public string Title { get; set; } = "";
