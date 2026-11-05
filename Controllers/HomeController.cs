@@ -45,7 +45,8 @@ namespace BookLibrary.Controllers
 
             if (!_cache.TryGetValue(key, out IReadOnlyList<BookRecommendation>? recs) || recs is null)
             {
-                recs = await _ai.GetBookRecommendationsAsync(books, RecommendationCount, cancellationToken);
+                var result = await _ai.GetBookRecommendationsAsync(books, RecommendationCount, cancellationToken);
+                recs = result.Data ?? Array.Empty<BookRecommendation>();
 
                 // успех: 12 часа; неуспех: само 1 минута, за да не товарим Gemini при всяко зареждане
                 _cache.Set(key, recs, recs.Count > 0 ? TimeSpan.FromHours(12) : TimeSpan.FromMinutes(1));

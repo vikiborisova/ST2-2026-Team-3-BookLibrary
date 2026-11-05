@@ -1,6 +1,7 @@
 using BookLibrary.Configuration;
 using BookLibrary.Data;
 using BookLibrary.Services;
+using Microsoft.Extensions.Options;
 using Microsoft.EntityFrameworkCore;
 
 namespace BookLibrary
@@ -30,11 +31,31 @@ namespace BookLibrary
             builder.Services.Configure<ExternalApisOptions>(
                 builder.Configuration.GetSection(ExternalApisOptions.SectionName));
 
-            builder.Services.AddHttpClient<IBookAiService, BookAiService>(client =>
+            builder.Services.Configure<LocalAiOptions>(
+                builder.Configuration.GetSection(LocalAiOptions.SectionName));
+
+            builder.Services.AddHttpClient<GeminiAiService>(client =>
             {
-                client.BaseAddress = new Uri("https://generativelanguage.googleapis.com/");
-                client.Timeout = TimeSpan.FromSeconds(15);
+                client.BaseAddress = new Uri(GeminiAiService.BaseUrl);
+                client.Timeout = TimeSpan.FromSeconds(120);
             });
+
+            builder.Services.AddHttpClient<LocalAiService>((sp, client) =>
+            {
+                var options = sp.GetRequiredService<IOptions<LocalAiOptions>>().Value;
+                var baseUrl = options.BaseUrl?.Trim();
+                if (!string.IsNullOrEmpty(baseUrl) && Uri.TryCreate(baseUrl.TrimEnd('/') + "/", UriKind.Absolute, out var uri))
+                    client.BaseAddress = uri;
+                client.Timeout = TimeSpan.FromSeconds(Math.Max(1, options.TimeoutSeconds));
+            });
+
+            builder.Services.AddKeyedSingleton(ResilientBookAiService.LocalAiCircuit, (sp, _) => new CircuitBreaker(
+                ResilientBookAiService.LocalAiCircuit,
+                sp.GetRequiredService<IOptions<LocalAiOptions>>().Value.CircuitBreaker,
+                TimeProvider.System,
+                sp.GetRequiredService<ILogger<CircuitBreaker>>()));
+
+            builder.Services.AddScoped<IBookAiService, ResilientBookAiService>();
 
             builder.Services.AddMemoryCache();
 

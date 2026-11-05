@@ -2,6 +2,9 @@
 
 @{
     ViewData["Title"] = "Добавяне на книга";
+    var aiError = ViewData["AiError"] as string;
+    var aiNotice = ViewData["AiNotice"] as string;
+    var aiProvider = ViewData["AiProvider"] as string;
 }
 
 <div class="narrow">
@@ -9,6 +12,41 @@
         <h2 class="form-card-title">Добавяне на нова книга</h2>
     </div>
 
+    <!-- AI: разпознаване от снимка на корицата -->
+    <form asp-action="ExtractFromImage" method="post" enctype="multipart/form-data" class="form-card mb-4" id="extract-form">
+        <h5 class="fw-bold mb-1">&#10024; Разпознай книгата от снимка</h5>
+        <p class="small mb-3">Снимай корицата на книга по твой интересн. Google Gemini чете заглавието и автора, търси книгата в интернет и попълва формата по-долу. Преди запис ти проверяваш данните.</p>
+
+        @if (!string.IsNullOrWhiteSpace(aiError))
+        {
+            <div class="alert alert-warning py-2 small ai-message" role="alert">@aiError</div>
+        }
+        @if (!string.IsNullOrWhiteSpace(aiNotice))
+        {
+            <div class="alert alert-info py-2 small ai-message" role="alert">@aiNotice</div>
+        }
+        @if (!string.IsNullOrWhiteSpace(aiProvider))
+        {
+            <div class="alert alert-success py-2 small ai-message" role="alert">
+                Разпознато с @aiProvider. Прегледай и коригирай данните долу, после натисни „Запази“.
+            </div>
+        }
+
+        <div class="row g-3 align-items-end">
+            <div class="col-md-8">
+                <label for="imageFile">Снимка на корицата (JPEG, PNG, WebP до 10 MB)</label>
+                <input type="file" id="imageFile" name="imageFile" class="form-control"
+                       accept="image/jpeg,image/png,image/webp" capture="environment" />
+            </div>
+            <div class="col-md-4">
+                <button type="submit" id="extract-btn" class="btn btn-ink w-100">Разпознай</button>
+            </div>
+        </div>
+
+        <img id="cover-preview" class="cover-preview d-none mt-3" alt="Преглед на снимката" />
+    </form>
+
+    <!-- Основна форма: добавя книгата на рафта -->
     <form asp-action="Create" method="post" enctype="multipart/form-data" class="form-card">
         <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
 
@@ -64,4 +102,28 @@
 
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
+    <script>
+        (function () {
+            const form = document.getElementById('extract-form');
+            const input = document.getElementById('imageFile');
+            const btn = document.getElementById('extract-btn');
+            const preview = document.getElementById('cover-preview');
+
+            // Преглед на избраната снимка
+            input.addEventListener('change', () => {
+                const file = input.files && input.files[0];
+                if (!file) { preview.classList.add('d-none'); return; }
+                preview.src = URL.createObjectURL(file);
+                preview.classList.remove('d-none');
+            });
+
+            // Разпознаването отнема няколко секунди: показваме, че работи
+            form.addEventListener('submit', () => {
+                form.querySelectorAll('.ai-message').forEach(el => el.remove());
+                if (!input.files || input.files.length === 0) return;
+                btn.disabled = true;
+                btn.textContent = 'Разпознавам… (до 30 сек.)';
+            });
+        })();
+    </script>
 }

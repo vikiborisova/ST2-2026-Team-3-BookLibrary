@@ -178,4 +178,9 @@ h1, h2, h3, .brand {
     border-radius: 8px;
 }
 
-
+.cover-preview {
+    max-height: 200px;
+    max-width: 100%;
+    border-radius: 8px;
+    border: 2px solid var(--lilac);
+}
