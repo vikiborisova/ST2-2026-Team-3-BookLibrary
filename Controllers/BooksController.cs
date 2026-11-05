@@ -2,6 +2,7 @@
 using BookLibrary.Data;
 using BookLibrary.Models;
 using BookLibrary.Helpers;
+using BookLibrary.Services;
 using System.IO;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
@@ -14,11 +15,13 @@ namespace BookLibrary.Controllers
     {
         private readonly IDatabase db;
         private readonly IWebHostEnvironment env;
+        private readonly IBookCoverService coverService;
 
-        public BooksController(IDatabase db, IWebHostEnvironment env)
+        public BooksController(IDatabase db, IWebHostEnvironment env, IBookCoverService coverService)
         {
             this.db = db;
             this.env = env;
+            this.coverService = coverService;
         }
 
         private int? GetCurrentUserId()
@@ -88,6 +91,73 @@ namespace BookLibrary.Controllers
             return View(book);
         }
 
+        // AI: разпознаване на книга от снимка на корицата -> попълва формата за преглед
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> ExtractFromImage(IFormFile? imageFile, CancellationToken cancellationToken)
+        {
+            if (GetCurrentUserId() == null) return RedirectToAction("Login", "Account");
+
+            const long maxSize = 10 * 1024 * 1024; // 10 MB
+            var allowed = new[] { "image/jpeg", "image/png", "image/webp" };
+
+            ViewData["Genres"] = GenreHelper.GetGenreSelectList();
+
+            if (imageFile == null || imageFile.Length == 0)
+            {
+                ViewData["AiError"] = "Моля, изберете снимка на корицата.";
+                return View("Create", new Book());
+            }
+            if (imageFile.Length > maxSize)
+            {
+                ViewData["AiError"] = "Снимката не може да е по-голяма от 10 MB.";
+                return View("Create", new Book());
+            }
+
+            var mimeType = (imageFile.ContentType ?? string.Empty).ToLowerInvariant();
+            if (!allowed.Contains(mimeType))
+            {
+                ViewData["AiError"] = "Разрешени са само JPEG, PNG и WebP снимки.";
+                return View("Create", new Book());
+            }
+
+            using var ms = new MemoryStream();
+            await imageFile.CopyToAsync(ms, cancellationToken);
+
+            // Подаваме на ИИ списъка с жанровете от сайта, за да избере един от тях
+            var genres = GenreHelper.GetGenreSelectList()
+                .Select(g => g.Value)
+                .Where(v => !string.IsNullOrWhiteSpace(v))
+                .ToList();
+
+            var result = await coverService.RecognizeAsync(ms.ToArray(), mimeType, genres, cancellationToken);
+
+            if (!result.IsSuccess)
+            {
+                ViewData["AiError"] = result.Error;
+                return View("Create", new Book());
+            }
+
+            // Без това asp-for показва празни стойности от ModelState
+            ModelState.Clear();
+
+            var book = new Book
+            {
+                Title = result.Title,
+                Author = result.Author,
+                Genre = result.Genre ?? string.Empty,
+                Description = result.Description ?? string.Empty,
+                Status = "Ще чета"
+            };
+            if (result.Year.HasValue) book.Year = result.Year.Value;
+
+            ViewData["Genres"] = GenreHelper.GetGenreSelectList(book.Genre);
+            ViewData["AiNotice"] = result.Notice;
+            ViewData["AiProvider"] = result.Provider;
+
+            return View("Create", book);
+        }
+
         // EDIT - GET
         public IActionResult Edit(int id)
         {
@@ -142,7 +212,6 @@ namespace BookLibrary.Controllers
 
             ViewData["Genres"] = GenreHelper.GetGenreSelectList(book.Genre);
 
-            // ТОВА е редът, който липсваше и причиняваше грешката:
             return View(book);
         }
 

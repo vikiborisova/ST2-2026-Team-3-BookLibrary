@@ -38,6 +38,12 @@ namespace BookLibrary
 
             builder.Services.AddMemoryCache();
 
+            builder.Services.AddHttpClient<BookLibrary.Services.IBookCoverService, BookLibrary.Services.BookCoverService>(client =>
+            {
+                // Два последователни извиквания към Gemini + търсене могат да отнемат време
+                client.Timeout = TimeSpan.FromSeconds(60);
+            });
+
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.
