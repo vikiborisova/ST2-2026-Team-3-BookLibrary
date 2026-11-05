@@ -15,13 +15,13 @@ namespace BookLibrary.Controllers
     {
         private readonly IDatabase db;
         private readonly IWebHostEnvironment env;
-        private readonly IBookCoverService coverService;
+        private readonly IBookAiService aiService;
 
-        public BooksController(IDatabase db, IWebHostEnvironment env, IBookCoverService coverService)
+        public BooksController(IDatabase db, IWebHostEnvironment env, IBookAiService aiService)
         {
             this.db = db;
             this.env = env;
-            this.coverService = coverService;
+            this.aiService = aiService;
         }
 
         private int? GetCurrentUserId()
@@ -130,7 +130,7 @@ namespace BookLibrary.Controllers
                 .Where(v => !string.IsNullOrWhiteSpace(v))
                 .ToList();
 
-            var result = await coverService.RecognizeAsync(ms.ToArray(), mimeType, genres, cancellationToken);
+            var result = await aiService.RecognizeCoverAsync(ms.ToArray(), mimeType, genres, cancellationToken);
 
             if (!result.IsSuccess)
             {
@@ -141,15 +141,16 @@ namespace BookLibrary.Controllers
             // Без това asp-for показва празни стойности от ModelState
             ModelState.Clear();
 
+            var info = result.Data!;
             var book = new Book
             {
-                Title = result.Title,
-                Author = result.Author,
-                Genre = result.Genre ?? string.Empty,
-                Description = result.Description ?? string.Empty,
+                Title = info.Title,
+                Author = info.Author,
+                Genre = info.Genre ?? string.Empty,
+                Description = info.Description ?? string.Empty,
                 Status = "Ще чета"
             };
-            if (result.Year.HasValue) book.Year = result.Year.Value;
+            if (info.Year.HasValue) book.Year = info.Year.Value;
 
             ViewData["Genres"] = GenreHelper.GetGenreSelectList(book.Genre);
             ViewData["AiNotice"] = result.Notice;

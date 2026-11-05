@@ -1,16 +1,17 @@
-﻿using BookLibrary.Models;
+using BookLibrary.Models;
 
-namespace BookLibrary.Services
+namespace BookLibrary.Services;
+
+public interface IBookAiService
 {
-    public interface IBookAiService
-    {
-        /// <summary>
-        /// Връща до <paramref name="count"/> препоръки. Празен списък = услугата не е налична.
-        /// Ако потребителят няма книги, връща популярни книги.
-        /// </summary>
-        Task<IReadOnlyList<BookRecommendation>> GetBookRecommendationsAsync(
-            IEnumerable<Book> userBooks,
-            int count = 6,
-            CancellationToken cancellationToken = default);
-    }
+    Task<AiResult<IReadOnlyList<BookRecommendation>>> GetBookRecommendationsAsync(
+        IEnumerable<Book> userBooks,
+        int count = 6,
+        CancellationToken cancellationToken = default);
+
+    Task<AiResult<BookCoverInfo>> RecognizeCoverAsync(
+        byte[] imageBytes,
+        string mimeType,
+        IReadOnlyList<string> genres,
+        CancellationToken cancellationToken = default);
 }
