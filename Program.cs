@@ -52,6 +52,8 @@ namespace BookLibrary
             {
                 var dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
                 dbContext.Database.EnsureCreated();
+
+                DbInitializer.Initialize(dbContext);
             }
 
             app.UseHttpsRedirection();

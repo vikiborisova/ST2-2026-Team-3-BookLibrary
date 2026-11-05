@@ -97,7 +97,6 @@
     padding-left: 0;
 }
 
-    /* autofill: keep the same look as the empty field */
     .form-control-underline:-webkit-autofill,
     .form-control-underline:-webkit-autofill:hover,
     .form-control-underline:-webkit-autofill:focus {

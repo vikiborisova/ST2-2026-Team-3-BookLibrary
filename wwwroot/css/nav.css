@@ -25,7 +25,6 @@
     }
 }
 
-/* plain links, no boxes */
 .navbar .navbar-nav .nav-link {
     color: var(--purple);
     font-weight: 600;
@@ -104,4 +103,4 @@
     }
 }
 
-/* END nav.css */
+

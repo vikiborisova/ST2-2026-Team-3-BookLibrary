@@ -45,7 +45,6 @@
             background-color: #fff;
         }
 
-    /* бутонът е със същата височина като полетата */
     .toolbar .btn {
         height: 48px;
         padding: 0 16px;
@@ -128,7 +127,7 @@
     word-break: break-word; /* дълги думи се чупят, не излизат от корицата */
 }
 
-/* pages */
+/* страници */
 .bk::before {
     content: "";
     position: absolute;
@@ -239,7 +238,7 @@
         white-space: nowrap;
     }
 
-/* ===== Phone: 2 equal columns ===== */
+/* ===== да са еднакви отстоянията м/у книгите на респонсив ===== */
 @media (max-width: 575.98px) {
     /* Точно 2 колони вместо автоматични */
     .book-grid {

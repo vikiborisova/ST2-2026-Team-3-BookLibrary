@@ -216,7 +216,7 @@
     border-bottom: 24px solid var(--purple);
 }
 
-/* the books: they fill all the space left and right of the panel */
+/* the books of the illustrations*/
 .cta-books {
     flex: 1;
     align-self: stretch;
@@ -283,5 +283,16 @@
         border: 0;
         border-radius: 0;
         padding: 2.5rem 1.25rem;
+    }
+
+    .hero .row,
+    #vazmozhnosti .row,
+    #kak .row {
+        --bs-gutter-x: 1.5rem;
+    }
+
+    /* nothing on the page can create a horizontal scrollbar */
+    main {
+        overflow-x: clip;
     }
 }
