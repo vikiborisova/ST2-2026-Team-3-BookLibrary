@@ -19,15 +19,15 @@
 
         @if (!string.IsNullOrWhiteSpace(aiError))
         {
-            <div class="alert alert-warning py-2 small" role="alert">@aiError</div>
+            <div class="alert alert-warning py-2 small ai-message" role="alert">@aiError</div>
         }
         @if (!string.IsNullOrWhiteSpace(aiNotice))
         {
-            <div class="alert alert-info py-2 small" role="alert">@aiNotice</div>
+            <div class="alert alert-info py-2 small ai-message" role="alert">@aiNotice</div>
         }
         @if (!string.IsNullOrWhiteSpace(aiProvider))
         {
-            <div class="alert alert-success py-2 small" role="alert">
+            <div class="alert alert-success py-2 small ai-message" role="alert">
                 Разпознато с @aiProvider. Прегледай и коригирай данните долу, после натисни „Запази“.
             </div>
         }
@@ -119,6 +119,7 @@
 
             // Разпознаването отнема няколко секунди: показваме, че работи
             form.addEventListener('submit', () => {
+                form.querySelectorAll('.ai-message').forEach(el => el.remove());
                 if (!input.files || input.files.length === 0) return;
                 btn.disabled = true;
                 btn.textContent = 'Разпознавам… (до 30 сек.)';
