@@ -125,8 +125,7 @@ namespace BookLibrary.Controllers
             await imageFile.CopyToAsync(ms, cancellationToken);
 
             // Подаваме на ИИ списъка с жанровете от сайта, за да избере един от тях
-            var genres = GenreHelper.GetGenreSelectList()
-                .Select(g => g.Value)
+            var genres = GenreHelper.GetGenres()
                 .Where(v => !string.IsNullOrWhiteSpace(v))
                 .ToList();
 

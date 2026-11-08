@@ -1,4 +1,4 @@
-using System.Diagnostics;
+п»їusing System.Diagnostics;
 using BookLibrary.Data;
 using BookLibrary.Models;
 using BookLibrary.Services;
@@ -29,30 +29,40 @@ namespace BookLibrary.Controllers
             return View();
         }
 
-        // Извиква се от каросела на началната страница (fetch), за да не се бави зареждането на страницата
+        
+        [HttpGet]
         [HttpGet]
         public async Task<IActionResult> Recommendations(CancellationToken cancellationToken)
         {
-            int? userId = HttpContext.Session.GetInt32("UserId");
-            var books = userId is null
-                ? new List<Book>()
-                : _db.GetAllBooks(userId.Value, null, null).ToList();
-
-            // Ключът се променя, когато потребителят добави/изтрие книга -> препоръките се обновяват
-            var key = userId is null
-                ? "recs:popular"
-                : $"recs:user:{userId}:{books.Count}:{books.Sum(b => (long)b.Id)}";
-
-            if (!_cache.TryGetValue(key, out IReadOnlyList<BookRecommendation>? recs) || recs is null)
+            try
             {
-                var result = await _ai.GetBookRecommendationsAsync(books, RecommendationCount, cancellationToken);
-                recs = result.Data ?? Array.Empty<BookRecommendation>();
+                int? userId = HttpContext.Session.GetInt32("UserId");
+                var books = userId is null
+                    ? new List<Book>()
+                    : _db.GetAllBooks(userId.Value, null, null).ToList();
 
-                // успех: 12 часа; неуспех: само 1 минута, за да не товарим Gemini при всяко зареждане
-                _cache.Set(key, recs, recs.Count > 0 ? TimeSpan.FromHours(12) : TimeSpan.FromMinutes(1));
+                var key = userId is null
+                    ? "recs:popular"
+                    : $"recs:user:{userId}:{books.Count}:{books.Sum(b => (long)b.Id)}";
+
+                if (!_cache.TryGetValue(key, out IReadOnlyList<BookRecommendation>? recs) || recs is null)
+                {
+                    var result = await _ai.GetBookRecommendationsAsync(books, RecommendationCount, cancellationToken);
+
+                    // РџСЂРѕРІРµСЂСЏРІР°РјРµ РґР°Р»Рё СѓСЃР»СѓРіР°С‚Р° Рµ РІСЉСЂРЅР°Р»Р° СѓСЃРїРµС€РµРЅ СЂРµР·СѓР»С‚Р°С‚
+                    recs = (result != null && result.Data != null) ? result.Data : Array.Empty<BookRecommendation>();
+
+                    _cache.Set(key, recs, recs.Count > 0 ? TimeSpan.FromHours(12) : TimeSpan.FromMinutes(1));
+                }
+
+                return Json(new { personalized = books.Count > 0, items = recs });
             }
-
-            return Json(new { personalized = books.Count > 0, items = recs });
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Р“СЂРµС€РєР° РїСЂРё Р·Р°СЂРµР¶РґР°РЅРµ РЅР° РїСЂРµРїРѕСЂСЉРєРёС‚Рµ.");
+                // Р’СЂСЉС‰Р°РјРµ РїСЂР°Р·РµРЅ СЃРїРёСЃСЉРє СЃ РіСЂРµС€РєР° РєСЉРј С„СЂРѕРЅС‚РµРЅРґР°, Р·Р° РґР° РЅРµ РіСЂСЉРјРЅРµ СЃС‚СЂР°РЅРёС†Р°С‚Р°
+                return Json(new { personalized = false, items = Array.Empty<BookRecommendation>(), error = ex.Message });
+            }
         }
 
         public IActionResult Privacy()
