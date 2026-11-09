@@ -18,19 +18,28 @@
                         <form asp-controller="Account" asp-action="Login" method="post">
                             @if (!showRegister)
                             {
-                                <div asp-validation-summary="All" class="text-danger mb-3"></div>
+                                <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
                             }
                             <div class="mb-4">
                                 <label for="loginUser">Потребителско име</label>
                                 <input id="loginUser" type="text" name="username"
+                                       value="@ViewData["LoginUsername"]"
                                        class="form-control form-control-underline"
-                                       placeholder="Вашето потребителско име" required />
+                                       placeholder="Вашето потребителско име" />
+                                @if (!showRegister)
+                                {
+                                    @Html.ValidationMessage("username", null, new { @class = "text-danger small" })
+                                }
                             </div>
                             <div class="mb-4">
                                 <label for="loginPass">Парола</label>
                                 <input id="loginPass" type="password" name="password"
                                        class="form-control form-control-underline"
-                                       placeholder="••••••••" required />
+                                       placeholder="••••••••" />
+                                @if (!showRegister)
+                                {
+                                    @Html.ValidationMessage("password", null, new { @class = "text-danger small" })
+                                }
                             </div>
                             <button type="submit" class="btn btn-ink">Вход в профил</button>
                             <p class="text-muted small" style="margin-top:10px;">

@@ -22,15 +22,25 @@ namespace BookLibrary.Controllers
         // LOGIN - POST
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Login(string username, string password)
+        public IActionResult Login(string? username, string? password)
         {
-            if (string.IsNullOrWhiteSpace(username) || string.IsNullOrWhiteSpace(password))
+            username = username?.Trim();
+            ViewData["LoginUsername"] = username;
+
+            if (string.IsNullOrWhiteSpace(username))
             {
-                ModelState.AddModelError("", "Моля, попълнете всички полета.");
+                ModelState.AddModelError("username", "Потребителското име е задължително.");
+            }
+            if (string.IsNullOrWhiteSpace(password))
+            {
+                ModelState.AddModelError("password", "Паролата е задължителна.");
+            }
+            if (!ModelState.IsValid)
+            {
                 return View();
             }
-            
-            var user = db.AuthenticateUser(username, password);
+
+            var user = db.AuthenticateUser(username!, password!);
             if (user != null)
             {
                 HttpContext.Session.SetInt32("UserId", user.Id);
@@ -39,7 +49,7 @@ namespace BookLibrary.Controllers
                 return RedirectToAction("Index", "Books");
             }
 
-            ModelState.AddModelError("", "Ггрешно потребителско име или парола.");
+            ModelState.AddModelError("", "Грешно потребителско име или парола.");
             return View();
         }
 
