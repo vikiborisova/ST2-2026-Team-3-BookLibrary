@@ -67,6 +67,7 @@
                 <select asp-for="Genre" class="form-select" asp-items="ViewBag.Genres" required>
                     <option value="">-- Изберете жанр --</option>
                 </select>
+                <span asp-validation-for="Genre" class="text-danger small"></span>
             </div>
             <div class="col-md-6">
                 <label asp-for="Year">Година на издаване</label>
