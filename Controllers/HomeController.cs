@@ -1,4 +1,4 @@
-using System.Diagnostics;
+п»їusing System.Diagnostics;
 using BookLibrary.Data;
 using BookLibrary.Models;
 using BookLibrary.Services;
@@ -9,58 +9,63 @@ namespace BookLibrary.Controllers
 {
     public class HomeController : Controller
     {
-        private const int RecommendationCount = 6;
+        private const int RecommendationCount = 6; //Р±СЂРѕР№ РїСЂРµРїРѕСЂСЉРєРё РїРѕ РР
 
-        private readonly ILogger<HomeController> _logger;
-        private readonly IDatabase _db;
-        private readonly IBookAiService _ai;
-        private readonly IMemoryCache _cache;
+        private readonly ILogger<HomeController> logger;
+        private readonly IDatabase db;
+        private readonly IBookAiService ai;
+        private readonly IMemoryCache cache;
 
         public HomeController(ILogger<HomeController> logger, IDatabase db, IBookAiService ai, IMemoryCache cache)
         {
-            _logger = logger;
-            _db = db;
-            _ai = ai;
-            _cache = cache;
+            this.logger = logger;
+            this.db = db;
+            this.ai = ai;
+            this.cache = cache;
         }
+
 
         public IActionResult Index()
         {
             return View();
         }
 
-        // Извиква се от каросела на началната страница (fetch), за да не се бави зареждането на страницата
+        
         [HttpGet]
+        //РјРµС‚РѕРґ Р·Р° РіРµРЅРµСЂРёСЂР°РЅРµРґ Рё РєРµС€РёСЂР°РЅРµ РЅР° РїСЂРµРїРѕСЂСЉРєРё 
         public async Task<IActionResult> Recommendations(CancellationToken cancellationToken)
         {
             int? userId = HttpContext.Session.GetInt32("UserId");
             var books = userId is null
                 ? new List<Book>()
-                : _db.GetAllBooks(userId.Value, null, null).ToList();
+                : db.GetAllBooks(userId.Value, null, null).ToList();
 
-            // Ключът се променя, когато потребителят добави/изтрие книга -> препоръките се обновяват
+           
             var key = userId is null
-                ? "recs:popular"
-                : $"recs:user:{userId}:{books.Count}:{books.Sum(b => (long)b.Id)}";
+                ? "recs:popular" //РєР»СЋС‡ РіРѕСЃС‚ РїРѕС‚СЂРµР±РёС‚РµР»
+                : $"recs:user:{userId}:{books.Count}:{books.Sum(b => (long)b.Id)}"; //РєР»СЋС‡ СЂРµРіРёСЃС‚СЂРёСЂР°РЅ РїРѕС‚СЂРµР±РёС‚РµР»
 
-            if (!_cache.TryGetValue(key, out IReadOnlyList<BookRecommendation>? recs) || recs is null)
+            if (!cache.TryGetValue(key, out IReadOnlyList<BookRecommendation>? recs) || recs is null) //РґР°Р»Рё РІ РїР°РјРµС‚С‚Р° РёРјР° Р·Р°РїР°Р·РµРЅРё РїСЂРµРїРѕСЂСЉРєРё
             {
-                var result = await _ai.GetBookRecommendationsAsync(books, RecommendationCount, cancellationToken);
+                var result = await ai.GetBookRecommendationsAsync(books, RecommendationCount, cancellationToken);
                 recs = result.Data ?? Array.Empty<BookRecommendation>();
 
-                // успех: 12 часа; неуспех: само 1 минута, за да не товарим Gemini при всяко зареждане
-                _cache.Set(key, recs, recs.Count > 0 ? TimeSpan.FromHours(12) : TimeSpan.FromMinutes(1));
+                
+                cache.Set(key, recs, recs.Count > 0 ? TimeSpan.FromHours(12) : TimeSpan.FromMinutes(1));//Р°РєРѕ РёРјР° РЅР°РјРµСЂРµРЅРё РїСЂРµРїРѕСЂСЉРєРё РіРё РїР°Р·Рё 12 С‡Р°СЃР°
             }
 
             return Json(new { personalized = books.Count > 0, items = recs });
         }
 
+        //СЃС‚СЂР°РЅРёС†Р° Р·Р° РїРѕРІРµСЂРёС‚РµР»РЅРѕСЃС‚ РЅР° РґР°РЅРЅРёС‚Рµ
         public IActionResult Privacy()
         {
             return View();
         }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
+
+        //РїСЂРё РіСЂРµС€РєР° РІ РїСЂРёР»РѕР¶РµРЅРёРµС‚Рѕ
         public IActionResult Error()
         {
             return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
