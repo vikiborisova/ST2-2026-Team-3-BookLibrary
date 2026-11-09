@@ -49,10 +49,6 @@
                     <div class="col-md-7 auth-form">
                         <h2>Създай профил и подреди първия си рафт</h2>
                         <form asp-controller="Account" asp-action="Register" method="post">
-                            @if (showRegister)
-                            {
-                                <div asp-validation-summary="All" class="text-danger mb-3"></div>
-                            }
                             <div class="mb-4">
                                 <label asp-for="Username" class="form-label">Потребителско име</label>
                                 <input asp-for="Username" class="form-control form-control-underline" placeholder="Вашето потребителско име" />
