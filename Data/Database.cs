@@ -56,24 +56,28 @@ namespace BookLibrary.Data
         {
             var query = context.Books.Where(b => b.UserId == userId).AsQueryable();
 
-            if (!string.IsNullOrWhiteSpace(search))
-            {
-                var searchLower = search.Trim().ToLower();
-                var isYear = int.TryParse(search.Trim(), out var searchYear);
-
-                query = query.Where(b =>
-                    b.Title.ToLower().Contains(searchLower) ||
-                    b.Author.ToLower().Contains(searchLower) ||
-                    (isYear && b.Year == searchYear) ||
-                    (b.Description != null && b.Description.ToLower().Contains(searchLower)));
-            }
-
             if (!string.IsNullOrWhiteSpace(genre))
             {
                 query = query.Where(b => b.Genre.Contains(genre));
             }
 
-            return query.ToList();
+            var books = query.ToList();
+
+            if (!string.IsNullOrWhiteSpace(search))
+            {
+                var term = search.Trim();
+                var isYear = int.TryParse(term, out var searchYear);
+                const StringComparison comp = StringComparison.OrdinalIgnoreCase;
+
+                books = books.Where(b =>
+                    (b.Title?.Contains(term, comp)  ?? false) ||
+                    (b.Author?.Contains(term, comp) ?? false) ||
+                    (isYear && b.Year == searchYear) ||
+                    (b.Description?.Contains(term, comp) ?? false))
+                    .ToList();
+            }
+
+            return books;
         }
 
         public Book? GetBookById(int id)
