@@ -13,7 +13,7 @@ namespace BookLibrary.Controllers
 {
     public class BooksController : Controller
     {
-        private readonly IDatabase db;
+        private readonly IDatabase db; //достъп до базата
         private readonly IWebHostEnvironment env;
         private readonly IBookAiService aiService;
 
@@ -30,6 +30,7 @@ namespace BookLibrary.Controllers
         }
 
         // SELECT WITH FILTER
+        //филтриране на книгите по заглавие и жанр
         public IActionResult Index(string? search, string? genre)
         {
             int? userId = GetCurrentUserId();
@@ -44,7 +45,7 @@ namespace BookLibrary.Controllers
             ViewData["CurrentGenre"] = genre;
             ViewData["Genres"] = GenreHelper.GetGenreSelectList(genre);
 
-            return View(books);
+            return View(books); //зарежда филтрираните книги
         }
 
         // INSERT - GET
@@ -57,6 +58,7 @@ namespace BookLibrary.Controllers
         }
 
         // INSERT - POST
+        //обработва изпратената форма за нова книга
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(Book book, IFormFile? pdfFile)
@@ -83,7 +85,7 @@ namespace BookLibrary.Controllers
                 }
                 book.UserId = userId.Value;
 
-                db.AddBook(book);
+                db.AddBook(book);//записва новата книга в базата данни
                 return RedirectToAction(nameof(Index));
             }
 
@@ -91,13 +93,14 @@ namespace BookLibrary.Controllers
             return View(book);
         }
 
-        // AI: разпознаване на книга от снимка на корицата -> попълва формата за преглед
+        // разпознаване на книга от снимка на корицата; попълва формата за преглед
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> ExtractFromImage(IFormFile? imageFile, CancellationToken cancellationToken)
         {
             if (GetCurrentUserId() == null) return RedirectToAction("Login", "Account");
 
+            //проверява спецификации за снимката
             const long maxSize = 10 * 1024 * 1024; // 10 MB
             var allowed = new[] { "image/jpeg", "image/png", "image/webp" };
 
@@ -124,24 +127,25 @@ namespace BookLibrary.Controllers
             using var ms = new MemoryStream();
             await imageFile.CopyToAsync(ms, cancellationToken);
 
-            // Подаваме на ИИ списъка с жанровете от сайта, за да избере един от тях
+            // Подава на ИИ списъка с жанровете от сайта, за да избере един от тях
             var genres = GenreHelper.GetGenreSelectList()
                 .Select(g => g.Value)
                 .Where(v => !string.IsNullOrWhiteSpace(v))
                 .ToList();
 
+            //анализ от ИИ
             var result = await aiService.RecognizeCoverAsync(ms.ToArray(), mimeType, genres, cancellationToken);
 
             if (!result.IsSuccess)
             {
                 ViewData["AiError"] = result.Error;
-                return View("Create", new Book());
+                return View("Create", new Book()); 
             }
 
-            // Без това asp-for показва празни стойности от ModelState
             ModelState.Clear();
 
             var info = result.Data!;
+            //нова книга с даннмите които са се генерирали
             var book = new Book
             {
                 Title = info.Title,
@@ -156,10 +160,11 @@ namespace BookLibrary.Controllers
             ViewData["AiNotice"] = result.Notice;
             ViewData["AiProvider"] = result.Provider;
 
-            return View("Create", book);
+            return View("Create", book); //връща формата попълнена
         }
 
         // EDIT - GET
+        //зарежда формата за редакция
         public IActionResult Edit(int id)
         {
             if (GetCurrentUserId() == null) return RedirectToAction("Login", "Account");
@@ -172,6 +177,7 @@ namespace BookLibrary.Controllers
         }
 
         // EDIT - POST
+        //записва промените по съществуваща книга
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, Book book, IFormFile? pdfFile)
@@ -188,10 +194,10 @@ namespace BookLibrary.Controllers
             {
                 if (pdfFile != null && pdfFile.Length > 0)
                 {
-                    string uploadsFolder = Path.Combine(env.WebRootPath, "uploads");
+                    string uploadsFolder = Path.Combine(env.WebRootPath, "uploads"); //създава папката ако я няма
                     if (!Directory.Exists(uploadsFolder)) Directory.CreateDirectory(uploadsFolder);
 
-                    string uniqueFileName = Guid.NewGuid().ToString() + "_" + pdfFile.FileName;
+                    string uniqueFileName = Guid.NewGuid().ToString() + "_" + pdfFile.FileName; //добавя неповтъоримо име на файла
                     string filePath = Path.Combine(uploadsFolder, uniqueFileName);
 
                     using (var fileStream = new FileStream(filePath, FileMode.Create))
@@ -207,7 +213,7 @@ namespace BookLibrary.Controllers
                 }
                 book.UserId = existingBook.UserId;
 
-                db.UpdateBook(book);
+                db.UpdateBook(book); //актуализира данните
                 return RedirectToAction(nameof(Index));
             }
 
@@ -217,6 +223,7 @@ namespace BookLibrary.Controllers
         }
 
         // DELETE - GET
+        //зарежда "потвърждение" преди изтриване
         public IActionResult Delete(int id)
         {
             if (GetCurrentUserId() == null) return RedirectToAction("Login", "Account");
@@ -228,6 +235,7 @@ namespace BookLibrary.Controllers
         }
 
         // DELETE - POST
+        //изтрива книгата от базата след потвърждение
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public IActionResult DeleteConfirmed(int id)
@@ -245,6 +253,7 @@ namespace BookLibrary.Controllers
         }
 
         // DETAILS
+        //страницата с пълната информация за книгата 
         public IActionResult Details(int id)
         {
             if (GetCurrentUserId() == null) return RedirectToAction("Login", "Account");
@@ -256,6 +265,7 @@ namespace BookLibrary.Controllers
         }
 
         // DELETE PDF - POST
+        //изтрива само прикачения към книгата файл както и пътя му от базата
         [HttpPost]
         [ValidateAntiForgeryToken]
         public IActionResult DeletePdf(int id)

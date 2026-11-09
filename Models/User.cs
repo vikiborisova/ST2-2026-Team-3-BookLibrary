@@ -2,7 +2,7 @@
 
 namespace BookLibrary.Models
 {
-    // Модел за потребител. Ползва се при вход и регистрация.
+    // Модел: описва един потребител; ползва се при вход и регистрация
     public class User
     {
         public int Id { get; set; }
