@@ -4,6 +4,7 @@ namespace BookLibrary.Services;
 
 internal static class AiPrompts
 {
+    //каква роля изпълнмява
     public const string CoverVisionSystem = """
         Ти разпознаваш книги от снимка на корица.
         Прочети заглавието и автора, които са написани на корицата.
@@ -14,13 +15,16 @@ internal static class AiPrompts
         3. Не измисляй и не допълвай липсващи данни.
         """;
 
+    //кратка потребителска заявка
     public const string CoverVisionUser = "Прочети заглавието и автора от корицата на тази книга.";
 
+    //какъв JSON масив да върне
     private const string RecommendationJsonInstructions =
         "Върни САМО JSON масив от обекти с полета: " +
         "\"title\" (заглавие на български), \"author\" (автор) и " +
         "\"description\" (2-3 изречения на български език защо книгата ще му хареса).";
 
+    //сглабя заявка към ИИ спрямо дали потребителя има книги на рафта или не
     public static string Recommendations(IReadOnlyList<Book> userBooks, int count)
     {
         if (userBooks.Count > 0)
@@ -35,6 +39,7 @@ internal static class AiPrompts
                "популярни книги към момента - световни и български бестселъри. " + RecommendationJsonInstructions;
     }
 
+    //подробна заявка към ИИ за събиране на метаданни за дадена книга
     public static string CoverDetails(string title, string author, IReadOnlyList<string> genres, bool webSearch) =>
         (webSearch ? "Намери в интернет информация за книгата" : "Дай информация за книгата") +
         $" „{title}“" +

@@ -5,15 +5,15 @@ namespace BookLibrary.Services;
 
 public abstract class BookAiProviderBase : IBookAiService
 {
-    protected readonly ILogger Logger;
+    protected readonly ILogger Logger; //системни логове
 
     protected BookAiProviderBase(ILogger logger) => Logger = logger;
 
-    protected abstract string Name { get; }
+    protected abstract string Name { get; } //Gemini
 
-    protected abstract bool HasWebSearch { get; }
+    protected abstract bool HasWebSearch { get; } //търсене в интернет
 
-    protected abstract string? ConfigurationError { get; }
+    protected abstract string? ConfigurationError { get; } //пр.: липсващ API ключ
 
     public bool IsConfigured => ConfigurationError is null;
 
@@ -23,25 +23,28 @@ public abstract class BookAiProviderBase : IBookAiService
 
     protected abstract Task<AiResult<string>> CompleteCoverDetailsAsync(string prompt, CancellationToken ct);
 
+    //за да генерира книжни препоръки
     public Task<AiResult<IReadOnlyList<BookRecommendation>>> GetBookRecommendationsAsync(
         IEnumerable<Book> userBooks, int count = 6, CancellationToken cancellationToken = default) =>
         GuardAsync<IReadOnlyList<BookRecommendation>>(async ct =>
         {
-            var prompt = AiPrompts.Recommendations(userBooks?.ToList() ?? new List<Book>(), count);
+            var prompt = AiPrompts.Recommendations(userBooks?.ToList() ?? new List<Book>(), count); //спрямо книгите които има на рафта
 
             var response = await CompleteRecommendationsAsync(prompt, ct);
             if (!response.IsSuccess) return Forward<IReadOnlyList<BookRecommendation>>(response);
 
-            var items = AiResponseParser.ParseRecommendations(response.Data!, count);
+            var items = AiResponseParser.ParseRecommendations(response.Data!, count);//преобразува върнатия отговор в списък с препоръки
             return items.Count == 0
                 ? AiResult<IReadOnlyList<BookRecommendation>>.Fail(
                     AiErrorKind.NotRecognized, $"{Name} не върна препоръки.", response.Provider)
                 : AiResult<IReadOnlyList<BookRecommendation>>.Success(items, response.Provider);
         }, cancellationToken);
 
+    //разпознаване на корицата
     public Task<AiResult<BookCoverInfo>> RecognizeCoverAsync(
         byte[] imageBytes, string mimeType, IReadOnlyList<string> genres, CancellationToken cancellationToken = default)
     {
+        //разпознава заглавие и автор от снимката
         if (imageBytes is null || imageBytes.Length == 0)
             return Task.FromResult(AiResult<BookCoverInfo>.Fail(AiErrorKind.InvalidInput, "Моля, изберете снимка на корицата."));
 
@@ -59,9 +62,11 @@ public abstract class BookAiProviderBase : IBookAiService
                     "Не успях да прочета заглавието от снимката. Опитайте с по-ясна снимка, без отблясъци.",
                     step1.Provider);
 
+            //търси жанр, година и оиписание на книгата
             var step2 = await CompleteCoverDetailsAsync(AiPrompts.CoverDetails(title, author, genres, HasWebSearch), ct);
             if (!step2.IsSuccess)
             {
+                //ако не намери, връща само заглавие и автор а другото ръчно го попълваме
                 return AiResult<BookCoverInfo>.Success(
                     new BookCoverInfo { Title = title, Author = author },
                     step1.Provider,
@@ -69,6 +74,7 @@ public abstract class BookAiProviderBase : IBookAiService
                     "Допълнете останалите полета ръчно.");
             }
 
+            //ако е успешно го парсира и връща BookCoverInfo
             var info = AiResponseParser.ToCoverInfo(AiResponseParser.ParseObject(step2.Data!), title, author, genres);
             return HasWebSearch
                 ? AiResult<BookCoverInfo>.Success(info, $"{step2.Provider} + търсене в интернет")
@@ -77,8 +83,10 @@ public abstract class BookAiProviderBase : IBookAiService
         }, cancellationToken);
     }
 
+    //защитен механизъм при грешки
     private async Task<AiResult<T>> GuardAsync<T>(Func<CancellationToken, Task<AiResult<T>>> action, CancellationToken ct)
     {
+        //ако ИИ не е правилно конфигуриран
         if (ConfigurationError is { } configError)
             return AiResult<T>.Fail(AiErrorKind.NotConfigured, configError, Name);
 
@@ -86,16 +94,19 @@ public abstract class BookAiProviderBase : IBookAiService
         {
             return await action(ct);
         }
+        //мрежови проблеми
         catch (HttpRequestException ex)
         {
             Logger.LogWarning(ex, "Мрежова грешка при връзка с {Provider}.", Name);
             return AiResult<T>.Fail(AiErrorKind.Unavailable, $"Няма връзка с {Name}. Проверете връзката.", Name);
         }
+        //хваща изтекло време за изчакване
         catch (Exception ex) when (ex is TaskCanceledException or TimeoutException && !ct.IsCancellationRequested)
         {
             Logger.LogWarning(ex, "Времето за изчакване на {Provider} изтече.", Name);
             return AiResult<T>.Fail(AiErrorKind.Unavailable, $"{Name} не отговори навреме. Опитайте отново.", Name);
         }
+        //дефектен или объркан JSON формат
         catch (JsonException ex)
         {
             Logger.LogWarning(ex, "Невалиден JSON от {Provider}.", Name);

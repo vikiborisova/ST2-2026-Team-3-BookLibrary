@@ -1,13 +1,13 @@
-using System.Text.Json;
+﻿using System.Text.Json;
 using BookLibrary.Models;
 
 namespace BookLibrary.Services;
 
 internal static class AiResponseParser
 {
-    private static readonly JsonSerializerOptions JsonOptions = new() { PropertyNameCaseInsensitive = true };
+    private static readonly JsonSerializerOptions JsonOptions = new() { PropertyNameCaseInsensitive = true };//няма да правят разлика между главни и малки букви
 
-    public static JsonElement ParseObject(string text)
+    public static JsonElement ParseObject(string text) //взема текст от ИИ и го превръща в JSON елемент
     {
         var first = text.IndexOf('{');
         var last = text.LastIndexOf('}');
@@ -16,6 +16,7 @@ internal static class AiResponseParser
         return doc.RootElement.Clone();
     }
 
+    //парсира препоръките; проверява дали са масив или обект
     public static IReadOnlyList<BookRecommendation> ParseRecommendations(string text, int count)
     {
         text = text.Trim();
@@ -52,6 +53,7 @@ internal static class AiResponseParser
             .ToList();
     }
 
+    //преобразува JSON от корицата в структуриран обект BookCoverInfo
     public static BookCoverInfo ToCoverInfo(JsonElement found, string title, string author, IReadOnlyList<string> genres)
     {
         var foundGenre = GetString(found, "genre");
@@ -69,7 +71,7 @@ internal static class AiResponseParser
             Description = string.IsNullOrWhiteSpace(description) ? null : description
         };
     }
-
+    //взима текстова стойност по дадено име на свойство от JSON елемент, като връща празен низ при липса на такова
     public static string GetString(JsonElement el, string name) =>
         el.ValueKind == JsonValueKind.Object &&
         el.TryGetProperty(name, out var v) &&
@@ -77,6 +79,7 @@ internal static class AiResponseParser
             ? (v.GetString() ?? string.Empty).Trim()
             : string.Empty;
 
+    //извлича годината от JSON и проверява диапазона
     private static int? GetYear(JsonElement el)
     {
         if (el.ValueKind != JsonValueKind.Object || !el.TryGetProperty("year", out var v)) return null;
@@ -89,5 +92,6 @@ internal static class AiResponseParser
         return year is >= 1000 and <= 2100 ? year : null;
     }
 
+    //връща първия непразен низ между две стойности
     private static string FirstNonEmpty(string a, string b) => string.IsNullOrWhiteSpace(a) ? b : a;
 }
