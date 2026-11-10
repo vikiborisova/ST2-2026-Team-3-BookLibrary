@@ -45,6 +45,7 @@ Fonts	Georgia (headings), Montserrat (body text)
 AI	Google Gemini API
 Authentication	Sessions
 Cache	IMemoryCache for recommendations
+
 Project structure
 BookLibrary/
 ├── Configuration/        # ExternalApisOptions – Gemini settings

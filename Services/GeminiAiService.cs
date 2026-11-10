@@ -7,6 +7,7 @@ using Microsoft.Extensions.Options;
 
 namespace BookLibrary.Services;
 
+// Услуга за интеграция с Google Gemini
 public sealed class GeminiAiService : BookAiProviderBase
 {
     public const string BaseUrl = "https://generativelanguage.googleapis.com/";
@@ -42,6 +43,7 @@ public sealed class GeminiAiService : BookAiProviderBase
             {
                 temperature = 0.7,
                 responseMimeType = "application/json",
+                // Gemini поддържа стриктно дефиниране на JSON схема за отговора
                 responseSchema = new
                 {
                     type = "ARRAY",
@@ -87,6 +89,7 @@ public sealed class GeminiAiService : BookAiProviderBase
             generationConfig = new { temperature = 0.2 }
         }, ct);
 
+    // Основен метод за изпращане на заявки към Gemini API
     private async Task<AiResult<string>> SendAsync(object payload, CancellationToken ct)
     {
         var model = _options.GeminiModel.Trim();
@@ -108,6 +111,8 @@ public sealed class GeminiAiService : BookAiProviderBase
                 : AiResult<string>.Success(text, provider);
         }
 
+        // Обработка на специфични HTTP грешки от Google
+
         var status = response.StatusCode;
         Logger.LogWarning("Gemini модел {Model} върна {Status}: {Body}", model, (int)status, body);
 
@@ -119,6 +124,7 @@ public sealed class GeminiAiService : BookAiProviderBase
                 "Gemini отхвърли заявката или API ключа. Проверете ExternalApis:GeminiApiKey.",
             _ => $"Грешка от Gemini (HTTP {(int)status}). Опитайте отново."
         };
+        // Класификация на грешката, която помага на оркестратора
         var kind = status is HttpStatusCode.BadRequest or HttpStatusCode.Unauthorized or HttpStatusCode.Forbidden
             ? AiErrorKind.NotConfigured
             : AiErrorKind.Unavailable;

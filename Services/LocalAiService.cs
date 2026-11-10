@@ -8,6 +8,7 @@ using Microsoft.Extensions.Options;
 
 namespace BookLibrary.Services;
 
+// Услуга за интеграция с локален LLM сървър
 public sealed class LocalAiService : BookAiProviderBase
 {
     private static readonly JsonSerializerOptions JsonOptions = new()
@@ -34,6 +35,7 @@ public sealed class LocalAiService : BookAiProviderBase
         : string.IsNullOrWhiteSpace(_options.Model) ? "Не е зададен модел на локалния AI (LocalAi:Model)."
         : null;
 
+    //конфигурации и проверки
     protected override Task<AiResult<string>> CompleteRecommendationsAsync(string prompt, CancellationToken ct) =>
         ChatAsync(new object[] { new { role = "user", content = prompt } }, temperature: 0.7, ct);
 
@@ -50,6 +52,7 @@ public sealed class LocalAiService : BookAiProviderBase
                 content = new object[]
                 {
                     new { type = "text", text = AiPrompts.CoverVisionUser },
+                    // Подаване на изображението към локалния Vision модел като Base64
                     new { type = "image_url", image_url = new { url = $"data:{mimeType};base64,{Convert.ToBase64String(imageBytes)}" } }
                 }
             }

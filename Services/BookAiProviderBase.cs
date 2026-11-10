@@ -2,7 +2,8 @@ using System.Text.Json;
 using BookLibrary.Models;
 
 namespace BookLibrary.Services;
-
+ //шаблон за проектиране темплейт метод към базовия клас, дефиниращ скелета на AI операцията, а насредниците имлементират 
+ //специфичните детайли по комуникацията с API.
 public abstract class BookAiProviderBase : IBookAiService
 {
     protected readonly ILogger Logger; //системни логове
@@ -83,7 +84,8 @@ public abstract class BookAiProviderBase : IBookAiService
         }, cancellationToken);
     }
 
-    //защитен механизъм при грешки
+    //защитен механизъм при грешки - CircuitBreaker - улавя мрежови грешки, timeout изтичания и JSON несоътветствия
+    //предпазва от срив
     private async Task<AiResult<T>> GuardAsync<T>(Func<CancellationToken, Task<AiResult<T>>> action, CancellationToken ct)
     {
         //ако ИИ не е правилно конфигуриран

@@ -2,7 +2,7 @@
 using BookLibrary.Models;
 
 namespace BookLibrary.Services;
-
+//адаптер/data mapper - преобразува суровия JSON отговор от външното AI API в чисти C# модели
 internal static class AiResponseParser
 {
     private static readonly JsonSerializerOptions JsonOptions = new() { PropertyNameCaseInsensitive = true };//няма да правят разлика между главни и малки букви
