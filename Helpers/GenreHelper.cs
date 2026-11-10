@@ -6,6 +6,7 @@ namespace BookLibrary.Helpers
     {
         public static List<string> GetGenres()
         {
+            //списък с всички жанрове за падащото меню
             return new List<string>
             {
                 "Класически роман",
@@ -40,6 +41,7 @@ namespace BookLibrary.Helpers
             };
         }
 
+        //генериране на самото падащото меню
         public static SelectList GetGenreSelectList(string? selectedGenre = null)
         {
             return new SelectList(GetGenres(), selectedGenre);

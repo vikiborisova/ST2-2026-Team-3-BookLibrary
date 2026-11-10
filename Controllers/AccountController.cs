@@ -8,18 +8,21 @@ namespace BookLibrary.Controllers
     {
         private readonly IDatabase db;
 
+        //Dependency Injection към базата данни
         public AccountController(IDatabase db)
         {
             this.db = db;
         }
 
         // LOGIN - GET
+        //връща страница за вход
         public IActionResult Login()
         {
             return View();
         }
 
         // LOGIN - POST
+        //извиква се след изпращане на формата
         [HttpPost]
         [ValidateAntiForgeryToken]
         public IActionResult Login(string? username, string? password)
@@ -54,12 +57,14 @@ namespace BookLibrary.Controllers
         }
 
         // REGISTER - GET
+        //връща страница за регистрация
         public IActionResult Register()
         {
             return View();
         }
 
         // REGISTER - POST
+        //извиква се след изпращане на формата
         [HttpPost]
         [ValidateAntiForgeryToken]
         public IActionResult Register(User model)
@@ -81,6 +86,7 @@ namespace BookLibrary.Controllers
         }
 
         // LOGOUT
+        //изчиства сесията
         public IActionResult Logout()
         {
             HttpContext.Session.Clear();

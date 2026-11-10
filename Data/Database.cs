@@ -3,17 +3,18 @@ using Microsoft.EntityFrameworkCore;
 
 namespace BookLibrary.Data
 {
+    //изпълнява правилата на интерфейса
     public class Database : IDatabase
     {
 
-        private readonly AppDbContext context;
+        private readonly AppDbContext context; //връзка с таблиците
 
         public Database(AppDbContext context)
         {
             this.context = context;
         }
 
-
+        //създаване на нов потребител
         public User? RegisterUser(string username, string password)
         {
             if (context.Users.Any(u => u.Username.ToLower() == username.ToLower()))
@@ -27,18 +28,20 @@ namespace BookLibrary.Data
             return user;
         }
 
+        //проверява за вярна парола и име
         public User? AuthenticateUser(string username, string password)
         {
             return context.Users.FirstOrDefault(u => u.Username.ToLower() == username.ToLower() && u.Password == password);
         }
 
-
+        //добавя книга в библиотеката
         public void AddBook(Book book)
         {
             context.Books.Add(book);
             context.SaveChanges();
         }
 
+        //изтрива книга от библиотеката
         public void DeleteBook(int id)
         {
             var book = GetBookById(id);
@@ -52,6 +55,7 @@ namespace BookLibrary.Data
 
 
         // Select with Filter
+        //показва книги за потребителя; филтрира по жанрт, заглавие, година и описание
         public List<Book> GetAllBooks(int userId, string? search = null, string? genre = null)
         {
             var query = context.Books.Where(b => b.UserId == userId).AsQueryable();
@@ -80,11 +84,13 @@ namespace BookLibrary.Data
             return books;
         }
 
+        //връща книга по id или null ако такава няма
         public Book? GetBookById(int id)
         {
             return context.Books.FirstOrDefault(b => b.Id == id);
         }
 
+        //актуализира данните на съществуващата книга
         public void UpdateBook(Book updatedBook)
         {
             var existingBook = GetBookById(updatedBook.Id);
