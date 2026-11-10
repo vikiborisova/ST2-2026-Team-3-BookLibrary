@@ -1,5 +1,6 @@
 namespace BookLibrary.Services;
 
+// Състоянията на прекъсвача
 public enum CircuitState
 {
     Closed,
@@ -9,8 +10,10 @@ public enum CircuitState
     HalfOpen
 }
 
+// Изключение, което се хвърля, когато веригата е отворена (услугата е маркирана като паднала)
 public sealed class CircuitBrokenException : Exception
 {
+
     public CircuitBrokenException(string circuitName, TimeSpan retryAfter)
         : base($"Circuit '{circuitName}' is open. Retry after {retryAfter.TotalSeconds:0}s.")
     {
@@ -24,8 +27,10 @@ public sealed class CircuitBrokenException : Exception
 
 public sealed class CircuitBreakerOptions
 {
+    // Брой последователни грешки преди веригата да се отвори
     public int FailureThreshold { get; set; } = 3;
 
+    // Време в секунди, през което заявките ще бъдат директно отхвърляни, преди да се опита отново
     public int BreakDurationSeconds { get; set; } = 60;
 }
 
@@ -58,17 +63,22 @@ public sealed class CircuitBreaker
         get { lock (_gate) return _state; }
     }
 
+    // Основният метод, който извиква уязвимата услуга
     public async Task<T> ExecuteAsync<T>(
         Func<CancellationToken, Task<T>> action,
         Func<T, bool> isFailure,
         CancellationToken cancellationToken = default)
     {
+        // Проверява дали имаме право да изпълним заявката, спрямо състоянието на прекъсвача
+        AcquirePermission();
         AcquirePermission();
 
         var recorded = false;
         try
         {
+            // Изпълнение на самата операция
             var result = await action(cancellationToken).ConfigureAwait(false);
+            // Проверка дали резултатът представлява неуспех за услугата
             if (isFailure(result)) OnFailure(); else OnSuccess();
             recorded = true;
             return result;
@@ -79,6 +89,7 @@ public sealed class CircuitBreaker
         }
         catch
         {
+            // При хвърлено изключение, маркираме опитът като неуспешен
             OnFailure();
             recorded = true;
             throw;
@@ -100,14 +111,18 @@ public sealed class CircuitBreaker
 
                 case CircuitState.Open:
                     var elapsed = _time.GetUtcNow() - _openedAt;
+                    // Ако не е минало достатъчно време, директно хвърляме грешка без да бавим системата
                     if (elapsed < _breakDuration)
+                        if (elapsed < _breakDuration)
                         throw new CircuitBrokenException(Name, _breakDuration - elapsed);
 
+                    // Времето е изтекло, преминаваме в полу-отворено състояние за проба
                     _state = CircuitState.HalfOpen;
                     _trialInFlight = true;
                     _logger.LogInformation("Circuit {Circuit} is half-open; sending a trial call.", Name);
                     return;
 
+                // Ако вече има пусната пробна заявка, отхвърляме останалите докато не видим резултата от нея
                 case CircuitState.HalfOpen:
                     if (_trialInFlight)
                         throw new CircuitBrokenException(Name, TimeSpan.Zero);
@@ -127,6 +142,7 @@ public sealed class CircuitBreaker
             if (_state == CircuitState.HalfOpen)
                 _logger.LogInformation("Circuit {Circuit} closed; trial call succeeded.", Name);
 
+            // Възстановяваме нормалното състояние при успех
             _state = CircuitState.Closed;
             _consecutiveFailures = 0;
             _trialInFlight = false;
@@ -143,10 +159,12 @@ public sealed class CircuitBreaker
                     return;
 
                 case CircuitState.HalfOpen:
+                    // Ако пробната заявка се провали, директно затваряме веригата отново
                     Trip("trial call failed");
                     return;
 
                 case CircuitState.Closed:
+                    // Увеличаваме брояча. Ако стигне лимита, отваряме веригата.
                     if (++_consecutiveFailures >= _failureThreshold)
                         Trip($"{_consecutiveFailures} consecutive failures");
                     return;
@@ -159,6 +177,7 @@ public sealed class CircuitBreaker
         lock (_gate) _trialInFlight = false;
     }
 
+    // блокира следващите заявки
     private void Trip(string reason)
     {
         _state = CircuitState.Open;
